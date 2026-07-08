@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل الدخول - نظام الشوكاني</title>
+    
+    <!-- Bootstrap 5 RTL -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- الأنماط العامة -->
+    <link rel="stylesheet" href="../css/style.css">
+    
+    <style>
+        /* أنماط خاصة بصفحة تسجيل الدخول */
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0d1b2a 0%, #1b263b 40%, #415a77 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 1.5rem;
+        }
+
+        .login-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: none;
+            border-radius: 2rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+            padding: 2.5rem 2rem;
+            width: 100%;
+            max-width: 440px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .login-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.8);
+        }
+
+        .brand-logo {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .brand-logo i {
+            font-size: 3.5rem;
+            color: #d4a373;
+            background: #1b263b;
+            padding: 1rem;
+            border-radius: 50%;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .brand-logo h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #0d1b2a;
+            margin-top: 0.75rem;
+            letter-spacing: -0.5px;
+        }
+
+        .brand-logo h1 span {
+            color: #d4a373;
+        }
+
+        .brand-logo p {
+            color: #6c757d;
+            font-size: 0.95rem;
+            margin-top: -0.25rem;
+            font-weight: 300;
+        }
+
+        .form-floating {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-floating .form-control {
+            border-radius: 0.75rem;
+            border: 1.5px solid #e9ecef;
+            background-color: #f8f9fa;
+            padding-right: 1.2rem;
+            height: 60px;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .form-floating .form-control:focus {
+            border-color: #d4a373;
+            box-shadow: 0 0 0 0.25rem rgba(212, 163, 115, 0.25);
+            background-color: #ffffff;
+        }
+
+        .form-floating label {
+            padding-right: 1.2rem;
+            color: #6c757d;
+            font-weight: 500;
+        }
+
+        .input-group-icon {
+            position: relative;
+        }
+
+        .input-group-icon .form-control {
+            padding-right: 2.8rem;
+        }
+
+        .input-group-icon .input-icon {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #adb5bd;
+            font-size: 1.1rem;
+            z-index: 10;
+            pointer-events: none;
+            transition: color 0.2s;
+        }
+
+        .input-group-icon .form-control:focus ~ .input-icon {
+            color: #d4a373;
+        }
+
+        .btn-login {
+            background: linear-gradient(135deg, #1b263b 0%, #0d1b2a 100%);
+            border: none;
+            border-radius: 0.75rem;
+            padding: 0.8rem 1.5rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #fff;
+            width: 100%;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 20px rgba(13, 27, 42, 0.3);
+        }
+
+        .btn-login:hover {
+            transform: scale(1.02);
+            background: linear-gradient(135deg, #2c3e50 0%, #1b263b 100%);
+            box-shadow: 0 12px 28px rgba(13, 27, 42, 0.45);
+            color: #f8f9fa;
+        }
+
+        .btn-login i {
+            margin-left: 0.5rem;
+        }
+
+        .login-footer {
+            text-align: center;
+            margin-top: 1.5rem;
+            font-size: 0.9rem;
+        }
+
+        .login-footer a {
+            color: #1b263b;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .login-footer a:hover {
+            color: #d4a373;
+            text-decoration: underline;
+        }
+
+        .login-footer .divider {
+            color: #dee2e6;
+            margin: 0 0.5rem;
+        }
+
+        #loginError {
+            display: none;
+            margin-top: 1rem;
+            border-radius: 0.75rem;
+            padding: 0.7rem 1rem;
+            font-weight: 500;
+        }
+
+        @media (max-width: 576px) {
+            .login-card {
+                padding: 1.75rem 1.25rem;
+                border-radius: 1.5rem;
+            }
+            .brand-logo i {
+                font-size: 2.5rem;
+                padding: 0.75rem;
+            }
+            .brand-logo h1 {
+                font-size: 1.5rem;
+            }
+        }
+
+        /* إخفاء أيقونة إظهار/إخفاء كلمة المرور الافتراضية للمتصفح بشكل أنيق */
+        input[type="password"]::-ms-reveal,
+        input[type="password"]::-ms-clear {
+            display: none;
+        }
+        input[type="password"]::-webkit-contacts-auto-fill-button,
+        input[type="password"]::-webkit-credentials-auto-fill-button {
+            visibility: hidden;
+            display: none !important;
+            pointer-events: none;
+            height: 0;
+            width: 0;
+            margin: 0;
+        }
+
+        .form-check-input:checked {
+            background-color: #1b263b;
+            border-color: #1b263b;
+        }
+        .form-check-label {
+            font-size: 0.9rem;
+            color: #495057;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- بطاقة تسجيل الدخول المركزية -->
+    <div class="login-card">
+        
+        <!-- القسم العلوي (الشعار + الاسم) -->
+        <div class="brand-logo">
+            <i class="fas fa-hands-helping"></i>
+            <h1>نظام <span>الشوكاني</span></h1>
+            <p>إدارة الأيتام والرعاية الاجتماعية</p>
+        </div>
+
+        <!-- نموذج تسجيل الدخول -->
+        <form id="loginForm" action="/login" method="POST" autocomplete="off">
+            
+            <!-- حقل اسم المستخدم -->
+            <div class="form-floating input-group-icon">
+                <input type="text" class="form-control" id="username" name="username" 
+                       placeholder="اسم المستخدم" required autofocus>
+                <label for="username">اسم المستخدم</label>
+                <i class="fas fa-user input-icon"></i>
+            </div>
+
+            <!-- حقل كلمة المرور -->
+            <div class="form-floating input-group-icon">
+                <input type="password" class="form-control" id="password" name="password" 
+                       placeholder="كلمة المرور" required>
+                <label for="password">كلمة المرور</label>
+                <i class="fas fa-lock input-icon"></i>
+            </div>
+
+            <!-- خيار تذكرني + رابط نسيت كلمة المرور -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="rememberMe" name="rememberMe">
+                    <label class="form-check-label" for="rememberMe">تذكرني</label>
+                </div>
+                <a href="#" class="text-decoration-none small" style="color: #6c757d;">
+                    <i class="fas fa-key me-1"></i> نسيت كلمة المرور؟
+                </a>
+            </div>
+
+            <!-- زر تسجيل الدخول -->
+            <button type="submit" class="btn btn-login" id="loginBtn">
+                <i class="fas fa-sign-in-alt"></i> دخول
+            </button>
+
+            <!-- منطقة عرض رسائل الخطأ -->
+            <div id="loginError" class="alert alert-danger" role="alert">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <span id="errorMessage">اسم المستخدم أو كلمة المرور غير صحيحة.</span>
+            </div>
+
+        </form>
+
+        <!-- تذييل الصفحة -->
+        <div class="login-footer">
+            <span>نسخة <strong>1.0.0</strong></span>
+            <span class="divider">|</span>
+            <span>مؤسسة الشوكاني الخيرية</span>
+            <br>
+            <small class="text-muted">جميع الحقوق محفوظة &copy; 2026</small>
+        </div>
+
+    </div>
+
+    <!-- ===== JavaScript ===== -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/login.js"></script>
+    
+    <!-- سكربت صغير لتحسين تجربة المستخدم فوراً -->
+    <script>
+        (function() {
+            'use strict';
+
+            document.addEventListener('DOMContentLoaded', function() {
+                const form = document.getElementById('loginForm');
+                const errorAlert = document.getElementById('loginError');
+                const errorSpan = document.getElementById('errorMessage');
+
+                if (form) {
+                    form.addEventListener('submit', function(event) {
+                        const username = document.getElementById('username').value.trim();
+                        const password = document.getElementById('password').value.trim();
+
+                        if (username === '' || password === '') {
+                            event.preventDefault();
+                            errorSpan.textContent = 'يرجى ملء جميع الحقول قبل المتابعة.';
+                            errorAlert.style.display = 'block';
+                            if (username === '') {
+                                document.getElementById('username').focus();
+                            } else {
+                                document.getElementById('password').focus();
+                            }
+                            return false;
+                        }
+
+                        errorAlert.style.display = 'none';
+                        return true;
+                    });
+                }
+
+                const inputs = document.querySelectorAll('#loginForm input');
+                inputs.forEach(function(input) {
+                    input.addEventListener('input', function() {
+                        if (errorAlert) {
+                            errorAlert.style.display = 'none';
+                        }
+                    });
+                });
+
+            });
+        })();
+    </script>
+
+</body>
+</html>

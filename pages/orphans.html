@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة الأيتام - نظام الشوكاني</title>
+    
+    <!-- Bootstrap 5 RTL -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- DataTables -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/dataTables.bootstrap5.min.css">
+    <!-- الأنماط العامة -->
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/forms.css">
+    <link rel="stylesheet" href="../css/tables.css">
+</head>
+<body>
+
+    <div class="wrapper">
+        <!-- القائمة الجانبية -->
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-brand">
+                <i class="fas fa-hands-helping"></i>
+                <h3>نظام <span>الشوكاني</span></h3>
+            </div>
+            <ul class="nav flex-column">
+                <li class="nav-item"><a class="nav-link" href="/dashboard"><i class="fas fa-chart-pie"></i> لوحة التحكم</a></li>
+                <li class="nav-group-title">إدارة البيانات</li>
+                <li class="nav-item"><a class="nav-link active" href="/pages/orphans.html"><i class="fas fa-child"></i> الأيتام</a></li>
+                <li class="nav-item"><a class="nav-link" href="/pages/families.html"><i class="fas fa-users"></i> الأسر</a></li>
+                <li class="nav-item"><a class="nav-link" href="/pages/sponsorships.html"><i class="fas fa-hand-holding-heart"></i> الكفالات</a></li>
+                <li class="nav-item"><a class="nav-link" href="/pages/aid.html"><i class="fas fa-gift"></i> المساعدات</a></li>
+                <li class="nav-item"><a class="nav-link" href="/pages/clothing.html"><i class="fas fa-tshirt"></i> الكسوة</a></li>
+                <li class="nav-item"><a class="nav-link" href="/pages/documents.html"><i class="fas fa-file-alt"></i> الوثائق</a></li>
+                <li class="nav-group-title">التقارير والإعدادات</li>
+                <li class="nav-item"><a class="nav-link" href="/pages/reports.html"><i class="fas fa-file-alt"></i> التقارير</a></li>
+                <li class="nav-item"><a class="nav-link" href="/pages/users.html"><i class="fas fa-users-cog"></i> المستخدمون</a></li>
+                <li class="nav-item"><a class="nav-link" href="/pages/settings.html"><i class="fas fa-cog"></i> الإعدادات</a></li>
+                <li class="nav-item"><a class="nav-link" href="/pages/backups.html"><i class="fas fa-database"></i> النسخ الاحتياطي</a></li>
+                <li class="nav-item"><a class="nav-link" href="/pages/logs.html"><i class="fas fa-history"></i> سجل العمليات</a></li>
+                <li class="nav-item"><a class="nav-link" href="/pages/notifications.html"><i class="fas fa-bell"></i> التنبيهات</a></li>
+                <li class="nav-group-title">الحساب</li>
+                <li class="nav-item"><a class="nav-link" href="/logout"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</a></li>
+            </ul>
+        </nav>
+
+        <!-- المحتوى الرئيسي -->
+        <div class="main-content">
+            
+            <!-- الشريط العلوي -->
+            <nav class="navbar-top">
+                <button class="toggle-sidebar" id="toggleSidebar"><i class="fas fa-bars"></i></button>
+                <div class="user-info">
+                    <span class="user-name" id="userName">مدير النظام</span>
+                    <div class="user-avatar" id="userAvatar">م</div>
+                </div>
+            </nav>
+
+            <!-- محتوى الصفحة -->
+            <div class="page-content">
+                
+                <!-- عنوان الصفحة -->
+                <div class="page-header">
+                    <h4><i class="fas fa-child me-2"></i> إدارة الأيتام</h4>
+                    <div>
+                        <button class="btn btn-gold" id="addOrphanBtn"><i class="fas fa-plus"></i> إضافة يتيم</button>
+                        <button class="btn btn-outline-secondary" id="exportOrphansBtn"><i class="fas fa-file-export"></i> تصدير</button>
+                        <button class="btn btn-outline-secondary" id="printOrphansBtn"><i class="fas fa-print"></i> طباعة</button>
+                        <button class="btn btn-outline-secondary" id="refreshOrphansBtn"><i class="fas fa-sync"></i></button>
+                    </div>
+                </div>
+
+                <!-- فلتر البحث -->
+                <div class="row g-3 mb-3">
+                    <div class="col-md-4">
+                        <input type="text" class="form-control" id="searchOrphans" placeholder="بحث في الأيتام (الاسم، الرمز، الهوية)...">
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select" id="filterStatus">
+                            <option value="">جميع الحالات</option>
+                            <option value="نشط">نشط</option>
+                            <option value="منقطع">منقطع</option>
+                            <option value="منتهي">منتهي</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select" id="filterGender">
+                            <option value="">جميع الجنسين</option>
+                            <option value="ذكر">ذكر</option>
+                            <option value="أنثى">أنثى</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- جدول الأيتام -->
+                <div class="table-wrapper">
+                    <table class="table table-striped table-hover" id="orphansTable">
+                        <thead>
+                            <tr>
+                                <th>الرمز</th>
+                                <th>الاسم / الجنس</th>
+                                <th>تاريخ الميلاد</th>
+                                <th>الأسرة</th>
+                                <th>الحالة</th>
+                                <th>المستوى التعليمي</th>
+                                <th>تاريخ التسجيل</th>
+                                <th>الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="orphansTableBody">
+                            <!-- يتم ملؤها بواسطة JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- إحصائيات سريعة -->
+                <div class="row g-3 mt-3" id="orphansStats">
+                    <!-- يتم ملؤها بواسطة JavaScript -->
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== نموذج إضافة / تعديل يتيم (Modal) ===== -->
+    <div class="modal fade" id="orphanModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="orphanFormTitle">إضافة يتيم جديد</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="orphanForm">
+                    <div class="modal-body">
+                        <input type="hidden" id="orphanId">
+                        
+                        <div class="row g-3">
+                            <!-- الرمز -->
+                            <div class="col-md-3">
+                                <label class="form-label">رمز اليتيم</label>
+                                <input type="text" class="form-control" id="orphanCode" placeholder="يتولى النظام توليده تلقائياً" readonly>
+                            </div>
+                            
+                            <!-- الاسم الكامل -->
+                            <div class="col-md-9">
+                                <label class="form-label">الاسم الكامل *</label>
+                                <input type="text" class="form-control" id="fullName" required>
+                            </div>
+
+                            <!-- الجنس -->
+                            <div class="col-md-4">
+                                <label class="form-label">الجنس *</label>
+                                <select class="form-select" id="gender" required>
+                                    <option value="">اختر</option>
+                                    <option value="ذكر">ذكر</option>
+                                    <option value="أنثى">أنثى</option>
+                                </select>
+                            </div>
+
+                            <!-- تاريخ الميلاد -->
+                            <div class="col-md-4">
+                                <label class="form-label">تاريخ الميلاد *</label>
+                                <input type="date" class="form-control" id="birthDate" required>
+                            </div>
+
+                            <!-- مكان الميلاد -->
+                            <div class="col-md-4">
+                                <label class="form-label">مكان الميلاد</label>
+                                <input type="text" class="form-control" id="birthPlace">
+                            </div>
+
+                            <!-- الجنسية -->
+                            <div class="col-md-4">
+                                <label class="form-label">الجنسية</label>
+                                <input type="text" class="form-control" id="nationality" value="يمني">
+                            </div>
+
+                            <!-- رقم الهوية -->
+                            <div class="col-md-4">
+                                <label class="form-label">رقم الهوية/القيد</label>
+                                <input type="text" class="form-control" id="idNumber">
+                            </div>
+
+                            <!-- الحالة الصحية -->
+                            <div class="col-md-4">
+                                <label class="form-label">الحالة الصحية</label>
+                                <select class="form-select" id="healthStatus">
+                                    <option value="سليم">سليم</option>
+                                    <option value="يحتاج رعاية">يحتاج رعاية</option>
+                                    <option value="مصاب بإعاقة">مصاب بإعاقة</option>
+                                </select>
+                            </div>
+
+                            <!-- نوع الإعاقة -->
+                            <div class="col-md-4" id="disabilityField">
+                                <label class="form-label">نوع الإعاقة</label>
+                                <input type="text" class="form-control" id="disabilityType">
+                            </div>
+
+                            <!-- فصيلة الدم -->
+                            <div class="col-md-4">
+                                <label class="form-label">فصيلة الدم</label>
+                                <select class="form-select" id="bloodType">
+                                    <option value="">اختر</option>
+                                    <option value="A+">A+</option>
+                                    <option value="A-">A-</option>
+                                    <option value="B+">B+</option>
+                                    <option value="B-">B-</option>
+                                    <option value="AB+">AB+</option>
+                                    <option value="AB-">AB-</option>
+                                    <option value="O+">O+</option>
+                                    <option value="O-">O-</option>
+                                </select>
+                            </div>
+
+                            <!-- الأسرة -->
+                            <div class="col-md-6">
+                                <label class="form-label">الأسرة *</label>
+                                <select class="form-select" id="familyId" required>
+                                    <option value="">اختر الأسرة</option>
+                                </select>
+                            </div>
+
+                            <!-- حالة الأب -->
+                            <div class="col-md-6">
+                                <label class="form-label">حالة الأب</label>
+                                <select class="form-select" id="fatherStatus">
+                                    <option value="متوفي">متوفي</option>
+                                    <option value="غائب">غائب</option>
+                                    <option value="مجهول">مجهول</option>
+                                </select>
+                            </div>
+
+                            <!-- تاريخ وفاة الأب -->
+                            <div class="col-md-6" id="fatherDeathField">
+                                <label class="form-label">تاريخ وفاة الأب</label>
+                                <input type="date" class="form-control" id="fatherDeathDate">
+                            </div>
+
+                            <!-- سبب وفاة الأب -->
+                            <div class="col-md-6" id="fatherDeathCauseField">
+                                <label class="form-label">سبب وفاة الأب</label>
+                                <input type="text" class="form-control" id="fatherDeathCause">
+                            </div>
+
+                            <!-- حالة الأم -->
+                            <div class="col-md-4">
+                                <label class="form-label">حالة الأم</label>
+                                <select class="form-select" id="motherStatus">
+                                    <option value="حية">حية</option>
+                                    <option value="متوفاة">متوفاة</option>
+                                    <option value="غائبة">غائبة</option>
+                                </select>
+                            </div>
+
+                            <!-- اسم الأم -->
+                            <div class="col-md-4">
+                                <label class="form-label">اسم الأم</label>
+                                <input type="text" class="form-control" id="motherName">
+                            </div>
+
+                            <!-- هاتف الأم -->
+                            <div class="col-md-4">
+                                <label class="form-label">هاتف الأم</label>
+                                <input type="tel" class="form-control" id="motherPhone">
+                            </div>
+
+                            <!-- المدرسة -->
+                            <div class="col-md-6">
+                                <label class="form-label">المدرسة</label>
+                                <select class="form-select" id="schoolId">
+                                    <option value="">اختر المدرسة</option>
+                                </select>
+                            </div>
+
+                            <!-- المستوى التعليمي -->
+                            <div class="col-md-6">
+                                <label class="form-label">المستوى التعليمي</label>
+                                <select class="form-select" id="educationLevel">
+                                    <option value="">اختر</option>
+                                    <option value="تمهيدي">تمهيدي</option>
+                                    <option value="ابتدائي">ابتدائي</option>
+                                    <option value="إعدادي">إعدادي</option>
+                                    <option value="ثانوي">ثانوي</option>
+                                    <option value="جامعي">جامعي</option>
+                                </select>
+                            </div>
+
+                            <!-- الصف الدراسي -->
+                            <div class="col-md-4">
+                                <label class="form-label">الصف الدراسي</label>
+                                <input type="text" class="form-control" id="grade">
+                            </div>
+
+                            <!-- السنة الدراسية -->
+                            <div class="col-md-4">
+                                <label class="form-label">السنة الدراسية</label>
+                                <input type="text" class="form-control" id="academicYear" placeholder="مثل: 2024-2025">
+                            </div>
+
+                            <!-- حالة اليتيم -->
+                            <div class="col-md-4">
+                                <label class="form-label">حالة اليتيم</label>
+                                <select class="form-select" id="orphanStatus">
+                                    <option value="نشط">نشط</option>
+                                    <option value="منقطع">منقطع</option>
+                                    <option value="منتهي">منتهي</option>
+                                </select>
+                            </div>
+
+                            <!-- تاريخ التسجيل -->
+                            <div class="col-md-4">
+                                <label class="form-label">تاريخ التسجيل</label>
+                                <input type="date" class="form-control" id="admissionDate">
+                            </div>
+
+                            <!-- تاريخ الانتهاء (يظهر عند اختيار منتهي) -->
+                            <div class="col-md-4 release-field" style="display:none;">
+                                <label class="form-label">تاريخ الانتهاء</label>
+                                <input type="date" class="form-control" id="releaseDate">
+                            </div>
+
+                            <!-- سبب الانتهاء (يظهر عند اختيار منتهي) -->
+                            <div class="col-md-4 release-field" style="display:none;">
+                                <label class="form-label">سبب الانتهاء</label>
+                                <input type="text" class="form-control" id="releaseReason">
+                            </div>
+
+                            <!-- ملاحظات -->
+                            <div class="col-md-12">
+                                <label class="form-label">ملاحظات</label>
+                                <textarea class="form-control" id="notes" rows="2"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" id="orphanResetBtn">إلغاء</button>
+                        <button type="submit" class="btn btn-gold" id="orphanSubmitBtn">إضافة</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== عرض تفاصيل اليتيم (Modal) ===== -->
+    <div class="modal fade" id="orphanDetailModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">تفاصيل اليتيم</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="orphanDetailContent">
+                    <!-- يتم ملؤها بواسطة JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== JavaScript ===== -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.8/js/dataTables.bootstrap5.min.js"></script>
+    <script src="../js/app.js"></script>
+    <script src="../js/orphans.js"></script>
+
+</body>
+</html>

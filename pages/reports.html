@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>التقارير - نظام الشوكاني</title>
+    
+    <!-- Bootstrap 5 RTL -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <!-- الأنماط العامة -->
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/forms.css">
+    <link rel="stylesheet" href="../css/tables.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
+</head>
+<body>
+
+    <div class="wrapper">
+        <!-- القائمة الجانبية -->
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-brand">
+                <i class="fas fa-hands-helping"></i>
+                <h3>نظام <span>الشوكاني</span></h3>
+            </div>
+            <ul class="nav flex-column">
+                <li class="nav-item"><a class="nav-link" href="/dashboard"><i class="fas fa-chart-pie"></i> لوحة التحكم</a></li>
+                <li class="nav-group-title">إدارة البيانات</li>
+                <li class="nav-item"><a class="nav-link" href="/pages/orphans.html"><i class="fas fa-child"></i> الأيتام</a></li>
+                <li class="nav-item"><a class="nav-link" href="/pages/families.html"><i class="fas fa-users"></i> الأسر</a></li>
+                <li class="nav-item"><a class="nav-link" href="/pages/sponsorships.html"><i class="fas fa-hand-holding-heart"></i> الكفالات</a></li>
+                <li class="nav-item"><a class="nav-link" href="/pages/aid.html"><i class="fas fa-gift"></i> المساعدات</a></li>
+                <li class="nav-item"><a class="nav-link" href="/pages/clothing.html"><i class="fas fa-tshirt"></i> الكسوة</a></li>
+                <li class="nav-item"><a class="nav-link" href="/pages/documents.html"><i class="fas fa-file-alt"></i> الوثائق</a></li>
+                <li class="nav-group-title">التقارير والإعدادات</li>
+                <li class="nav-item"><a class="nav-link active" href="/pages/reports.html"><i class="fas fa-file-alt"></i> التقارير</a></li>
+                <li class="nav-item"><a class="nav-link" href="/pages/users.html"><i class="fas fa-users-cog"></i> المستخدمون</a></li>
+                <li class="nav-item"><a class="nav-link" href="/pages/settings.html"><i class="fas fa-cog"></i> الإعدادات</a></li>
+                <li class="nav-item"><a class="nav-link" href="/pages/backups.html"><i class="fas fa-database"></i> النسخ الاحتياطي</a></li>
+                <li class="nav-item"><a class="nav-link" href="/pages/logs.html"><i class="fas fa-history"></i> سجل العمليات</a></li>
+                <li class="nav-item"><a class="nav-link" href="/pages/notifications.html"><i class="fas fa-bell"></i> التنبيهات</a></li>
+                <li class="nav-group-title">الحساب</li>
+                <li class="nav-item"><a class="nav-link" href="/logout"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</a></li>
+            </ul>
+        </nav>
+
+        <!-- المحتوى الرئيسي -->
+        <div class="main-content">
+            
+            <!-- الشريط العلوي -->
+            <nav class="navbar-top">
+                <button class="toggle-sidebar" id="toggleSidebar"><i class="fas fa-bars"></i></button>
+                <div class="user-info">
+                    <span class="user-name" id="userName">مدير النظام</span>
+                    <div class="user-avatar" id="userAvatar">م</div>
+                </div>
+            </nav>
+
+            <!-- محتوى الصفحة -->
+            <div class="page-content">
+                
+                <!-- عنوان الصفحة -->
+                <div class="page-header">
+                    <h4><i class="fas fa-file-alt me-2"></i> التقارير</h4>
+                    <div>
+                        <button class="btn btn-outline-secondary" id="exportPdfBtn" disabled><i class="fas fa-file-pdf"></i> PDF</button>
+                        <button class="btn btn-outline-secondary" id="exportExcelBtn" disabled><i class="fas fa-file-excel"></i> Excel</button>
+                        <button class="btn btn-outline-secondary" id="printReportBtn" disabled><i class="fas fa-print"></i> طباعة</button>
+                    </div>
+                </div>
+
+                <!-- خيارات التقرير -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div class="row g-3 align-items-end">
+                            <div class="col-md-3">
+                                <label class="form-label">نوع التقرير</label>
+                                <select class="form-select" id="reportType">
+                                    <option value="orphans-status">حالة الأيتام</option>
+                                    <option value="sponsorships-status">حالة الكفالات</option>
+                                    <option value="aid-summary">ملخص المساعدات</option>
+                                    <option value="clothing-summary">ملخص الكسوة</option>
+                                    <option value="monthly-statistics">إحصائيات شهرية</option>
+                                    <option value="families-summary">ملخص الأسر</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">من تاريخ</label>
+                                <input type="date" class="form-control" id="reportDateFrom">
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">إلى تاريخ</label>
+                                <input type="date" class="form-control" id="reportDateTo">
+                            </div>
+                            <div class="col-md-2">
+                                <button class="btn btn-gold w-100" id="generateReportBtn"><i class="fas fa-chart-bar"></i> عرض التقرير</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- الإحصائيات السريعة -->
+                <div class="row g-3 mb-3" id="reportStats">
+                    <!-- يتم ملؤها بواسطة JavaScript -->
+                </div>
+
+                <!-- حاوية التقرير -->
+                <div id="reportContainer">
+                    <div class="text-center py-5">
+                        <i class="fas fa-chart-pie fa-3x text-muted mb-3"></i>
+                        <h5 class="text-muted">اختر نوع التقرير واضغط "عرض التقرير"</h5>
+                        <p class="text-muted small">سيظهر هنا التقرير مع الرسوم البيانية والجداول التفصيلية</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== JavaScript ===== -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.1/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="../js/app.js"></script>
+    <script src="../js/reports.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,25 @@
+# مجلدات Node.js
+node_modules/
+package-lock.json
+
+# قاعدة البيانات (لا نرفعها لأنها تحتوي على بيانات)
+database/data.db
+database/data.db-journal
+
+# الملفات المؤقتة
+*.log
+*.tmp
+*.bak
+.DS_Store
+
+# المجلدات المؤقتة
+temp/
+logs/
+uploads/
+reports/
+backups/
+
+# ملفات التحرير
+*.swp
+*.swo
+*~

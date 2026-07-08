@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الإعدادات - نظام الشوكاني</title>
+    
+    <!-- Bootstrap 5 RTL -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- DataTables -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/dataTables.bootstrap5.min.css">
+    <!-- الأنماط العامة -->
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/forms.css">
+    <link rel="stylesheet" href="../css/tables.css">
+</head>
+<body>
+
+    <div class="wrapper">
+        <!-- القائمة الجانبية -->
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-brand">
+                <i class="fas fa-hands-helping"></i>
+                <h3>نظام <span>الشوكاني</span></h3>
+            </div>
+            <ul class="nav flex-column">
+                <li class="nav-item"><a class="nav-link" href="/dashboard"><i class="fas fa-chart-pie"></i> لوحة التحكم</a></li>
+                <li class="nav-group-title">إدارة البيانات</li>
+                <li class="nav-item"><a class="nav-link" href="/pages/orphans.html"><i class="fas fa-child"></i> الأيتام</a></li>
+                <li class="nav-item"><a class="nav-link" href="/pages/families.html"><i class="fas fa-users"></i> الأسر</a></li>
+                <li class="nav-item"><a class="nav-link" href="/pages/sponsorships.html"><i class="fas fa-hand-holding-heart"></i> الكفالات</a></li>
+                <li class="nav-item"><a class="nav-link" href="/pages/aid.html"><i class="fas fa-gift"></i> المساعدات</a></li>
+                <li class="nav-item"><a class="nav-link" href="/pages/clothing.html"><i class="fas fa-tshirt"></i> الكسوة</a></li>
+                <li class="nav-item"><a class="nav-link" href="/pages/documents.html"><i class="fas fa-file-alt"></i> الوثائق</a></li>
+                <li class="nav-group-title">التقارير والإعدادات</li>
+                <li class="nav-item"><a class="nav-link" href="/pages/reports.html"><i class="fas fa-file-alt"></i> التقارير</a></li>
+                <li class="nav-item"><a class="nav-link" href="/pages/users.html"><i class="fas fa-users-cog"></i> المستخدمون</a></li>
+                <li class="nav-item"><a class="nav-link active" href="/pages/settings.html"><i class="fas fa-cog"></i> الإعدادات</a></li>
+                <li class="nav-item"><a class="nav-link" href="/pages/backups.html"><i class="fas fa-database"></i> النسخ الاحتياطي</a></li>
+                <li class="nav-item"><a class="nav-link" href="/pages/logs.html"><i class="fas fa-history"></i> سجل العمليات</a></li>
+                <li class="nav-item"><a class="nav-link" href="/pages/notifications.html"><i class="fas fa-bell"></i> التنبيهات</a></li>
+                <li class="nav-group-title">الحساب</li>
+                <li class="nav-item"><a class="nav-link" href="/logout"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</a></li>
+            </ul>
+        </nav>
+
+        <!-- المحتوى الرئيسي -->
+        <div class="main-content">
+            
+            <!-- الشريط العلوي -->
+            <nav class="navbar-top">
+                <button class="toggle-sidebar" id="toggleSidebar"><i class="fas fa-bars"></i></button>
+                <div class="user-info">
+                    <span class="user-name" id="userName">مدير النظام</span>
+                    <div class="user-avatar" id="userAvatar">م</div>
+                </div>
+            </nav>
+
+            <!-- محتوى الصفحة -->
+            <div class="page-content">
+                
+                <!-- عنوان الصفحة -->
+                <div class="page-header">
+                    <h4><i class="fas fa-cog me-2"></i> إعدادات النظام</h4>
+                </div>
+
+                <!-- علامات التبويب -->
+                <ul class="nav nav-tabs mb-4" id="settingsTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="tabGeneral" data-bs-toggle="tab" data-bs-target="#generalTab" type="button" role="tab">
+                            <i class="fas fa-globe"></i> عام
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="tabSponsorships" data-bs-toggle="tab" data-bs-target="#sponsorshipsTab" type="button" role="tab">
+                            <i class="fas fa-hand-holding-heart"></i> الكفالات
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="tabReports" data-bs-toggle="tab" data-bs-target="#reportsTab" type="button" role="tab">
+                            <i class="fas fa-file-alt"></i> التقارير
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="tabBackup" data-bs-toggle="tab" data-bs-target="#backupTab" type="button" role="tab">
+                            <i class="fas fa-database"></i> النسخ الاحتياطي
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="tabNotifications" data-bs-toggle="tab" data-bs-target="#notificationsTab" type="button" role="tab">
+                            <i class="fas fa-bell"></i> التنبيهات
+                        </button>
+                    </li>
+                </ul>
+
+                <!-- محتوى علامات التبويب -->
+                <div class="tab-content" id="settingsTabsContent">
+
+                    <!-- ===== علامة التبويب: عام ===== -->
+                    <div class="tab-pane fade show active" id="generalTab" role="tabpanel">
+                        <div class="card">
+                            <div class="card-header"><i class="fas fa-globe me-2"></i> الإعدادات العامة</div>
+                            <div class="card-body">
+                                <form id="settingsGeneralForm">
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label">اسم التطبيق</label>
+                                            <input type="text" class="form-control" id="appName" placeholder="نظام الشوكاني لإدارة الأيتام">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">الإصدار</label>
+                                            <input type="text" class="form-control" id="appVersion" placeholder="1.0.0">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">العملة الافتراضية</label>
+                                            <select class="form-select" id="defaultCurrency">
+                                                <option value="YER">ريال يمني (YER)</option>
+                                                <option value="SAR">ريال سعودي (SAR)</option>
+                                                <option value="USD">دولار أمريكي (USD)</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">اللغة</label>
+                                            <select class="form-select" id="language">
+                                                <option value="ar">العربية</option>
+                                                <option value="en">English</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">المنطقة الزمنية</label>
+                                            <select class="form-select" id="timezone">
+                                                <option value="Asia/Riyadh">الرياض (UTC+3)</option>
+                                                <option value="Asia/Aden">عدن (UTC+3)</option>
+                                                <option value="UTC">UTC</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-12">
+                                            <button type="submit" class="btn btn-gold" id="saveGeneralBtn"><i class="fas fa-save"></i> حفظ الإعدادات</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ===== علامة التبويب: الكفالات ===== -->
+                    <div class="tab-pane fade" id="sponsorshipsTab" role="tabpanel">
+                        <div class="card">
+                            <div class="card-header"><i class="fas fa-hand-holding-heart me-2"></i> إعدادات الكفالات</div>
+                            <div class="card-body">
+                                <form id="settingsSponsorshipsForm">
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label">المبلغ الافتراضي الشهري (ريال)</label>
+                                            <input type="number" class="form-control" id="defaultMonthlyAmount" step="0.01" min="0">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">الحد الأدنى للمبلغ (ريال)</label>
+                                            <input type="number" class="form-control" id="minSponsorshipAmount" step="0.01" min="0">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">الحد الأقصى للمبلغ (ريال)</label>
+                                            <input type="number" class="form-control" id="maxSponsorshipAmount" step="0.01" min="0">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">أيام التذكير قبل انتهاء الكفالة</label>
+                                            <input type="number" class="form-control" id="reminderDays" min="1">
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" type="checkbox" id="autoRenewEnabled" role="switch">
+                                                <label class="form-check-label" for="autoRenewEnabled">تفعيل التجديد التلقائي للكفالات</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-12">
+                                            <button type="submit" class="btn btn-gold" id="saveSponsorshipsBtn"><i class="fas fa-save"></i> حفظ الإعدادات</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ===== علامة التبويب: التقارير ===== -->
+                    <div class="tab-pane fade" id="reportsTab" role="tabpanel">
+                        <div class="card">
+                            <div class="card-header"><i class="fas fa-file-alt me-2"></i> إعدادات التقارير</div>
+                            <div class="card-body">
+                                <form id="settingsReportsForm">
+                                    <div class="row g-3">
+                                        <div class="col-md-12">
+                                            <label class="form-label">نص التذييل في التقارير</label>
+                                            <input type="text" class="form-control" id="reportFooterText" placeholder="نظام الشوكاني - إدارة الأيتام">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">حجم الصفحة</label>
+                                            <select class="form-select" id="reportPageSize">
+                                                <option value="A4">A4</option>
+                                                <option value="A3">A3</option>
+                                                <option value="Letter">Letter</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">اتجاه الصفحة</label>
+                                            <select class="form-select" id="reportOrientation">
+                                                <option value="portrait">عمودي</option>
+                                                <option value="landscape">أفقي</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" type="checkbox" id="reportLogoEnabled" role="switch">
+                                                <label class="form-check-label" for="reportLogoEnabled">إظهار الشعار في التقارير</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-12">
+                                            <button type="submit" class="btn btn-gold" id="saveReportsBtn"><i class="fas fa-save"></i> حفظ الإعدادات</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ===== علامة التبويب: النسخ الاحتياطي ===== -->
+                    <div class="tab-pane fade" id="backupTab" role="tabpanel">
+                        <div class="card">
+                            <div class="card-header"><i class="fas fa-database me-2"></i> إعدادات النسخ الاحتياطي</div>
+                            <div class="card-body">
+                                <form id="settingsBackupForm">
+                                    <div class="row g-3">
+                                        <div class="col-md-12">
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" type="checkbox" id="backupAutoEnabled" role="switch">
+                                                <label class="form-check-label" for="backupAutoEnabled">تفعيل النسخ الاحتياطي التلقائي</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">الفاصل الزمني (ساعات)</label>
+                                            <input type="number" class="form-control" id="backupInterval" min="1" value="24">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label">فترة الاحتفاظ (أيام)</label>
+                                            <input type="number" class="form-control" id="backupRetention" min="1" value="30">
+                                        </div>
+                                        <div class="col-md-12">
+                                            <label class="form-label">مسار حفظ النسخ</label>
+                                            <input type="text" class="form-control" id="backupLocation" placeholder="./backups">
+                                        </div>
+                                        <div class="col-12">
+                                            <button type="submit" class="btn btn-gold" id="saveBackupBtn"><i class="fas fa-save"></i> حفظ الإعدادات</button>
+                                        </div>
+                                    </div>
+                                </form>
+                                <hr>
+                                <div class="mt-3">
+                                    <button class="btn btn-primary" id="createBackupBtn"><i class="fas fa-plus"></i> إنشاء نسخة احتياطية يدوية</button>
+                                </div>
+                                <div class="mt-3" id="backupStatus">
+                                    <!-- يتم عرض حالة النسخ بواسطة JavaScript -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ===== علامة التبويب: التنبيهات ===== -->
+                    <div class="tab-pane fade" id="notificationsTab" role="tabpanel">
+                        <div class="card">
+                            <div class="card-header"><i class="fas fa-bell me-2"></i> إعدادات التنبيهات</div>
+                            <div class="card-body">
+                                <form id="settingsNotificationsForm">
+                                    <div class="row g-3">
+                                        <div class="col-md-12">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="notifyOnOrphanAdd">
+                                                <label class="form-check-label" for="notifyOnOrphanAdd">تنبيه عند إضافة يتيم جديد</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="notifyOnSponsorshipEnd">
+                                                <label class="form-check-label" for="notifyOnSponsorshipEnd">تنبيه عند انتهاء كفالة</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="notifyOnAidDistribution">
+                                                <label class="form-check-label" for="notifyOnAidDistribution">تنبيه عند توزيع مساعدة</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="notifyOnClothingDistribution">
+                                                <label class="form-check-label" for="notifyOnClothingDistribution">تنبيه عند توزيع كسوة</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <label class="form-label">البريد الإلكتروني للتنبيهات</label>
+                                            <input type="email" class="form-control" id="notificationEmail" placeholder="admin@alshawkani.org">
+                                        </div>
+                                        <div class="col-12">
+                                            <button type="submit" class="btn btn-gold" id="saveNotificationsBtn"><i class="fas fa-save"></i> حفظ الإعدادات</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                </div><!-- نهاية tab-content -->
+
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== JavaScript ===== -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.8/js/dataTables.bootstrap5.min.js"></script>
+    <script src="../js/app.js"></script>
+    <script src="../js/settings.js"></script>
+
+</body>
+</html>

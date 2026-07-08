@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة الكسوة - نظام الشوكاني</title>
+    
+    <!-- Bootstrap 5 RTL -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- DataTables -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/dataTables.bootstrap5.min.css">
+    <!-- الأنماط العامة -->
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/forms.css">
+    <link rel="stylesheet" href="../css/tables.css">
+</head>
+<body>
+
+    <div class="wrapper">
+        <!-- القائمة الجانبية -->
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-brand">
+                <i class="fas fa-hands-helping"></i>
+                <h3>نظام <span>الشوكاني</span></h3>
+            </div>
+            <ul class="nav flex-column">
+                <li class="nav-item"><a class="nav-link" href="/dashboard"><i class="fas fa-chart-pie"></i> لوحة التحكم</a></li>
+                <li class="nav-group-title">إدارة البيانات</li>
+                <li class="nav-item"><a class="nav-link" href="/pages/orphans.html"><i class="fas fa-child"></i> الأيتام</a></li>
+                <li class="nav-item"><a class="nav-link" href="/pages/families.html"><i class="fas fa-users"></i> الأسر</a></li>
+                <li class="nav-item"><a class="nav-link" href="/pages/sponsorships.html"><i class="fas fa-hand-holding-heart"></i> الكفالات</a></li>
+                <li class="nav-item"><a class="nav-link" href="/pages/aid.html"><i class="fas fa-gift"></i> المساعدات</a></li>
+                <li class="nav-item"><a class="nav-link active" href="/pages/clothing.html"><i class="fas fa-tshirt"></i> الكسوة</a></li>
+                <li class="nav-item"><a class="nav-link" href="/pages/documents.html"><i class="fas fa-file-alt"></i> الوثائق</a></li>
+                <li class="nav-group-title">التقارير والإعدادات</li>
+                <li class="nav-item"><a class="nav-link" href="/pages/reports.html"><i class="fas fa-file-alt"></i> التقارير</a></li>
+                <li class="nav-item"><a class="nav-link" href="/pages/users.html"><i class="fas fa-users-cog"></i> المستخدمون</a></li>
+                <li class="nav-item"><a class="nav-link" href="/pages/settings.html"><i class="fas fa-cog"></i> الإعدادات</a></li>
+                <li class="nav-item"><a class="nav-link" href="/pages/backups.html"><i class="fas fa-database"></i> النسخ الاحتياطي</a></li>
+                <li class="nav-item"><a class="nav-link" href="/pages/logs.html"><i class="fas fa-history"></i> سجل العمليات</a></li>
+                <li class="nav-item"><a class="nav-link" href="/pages/notifications.html"><i class="fas fa-bell"></i> التنبيهات</a></li>
+                <li class="nav-group-title">الحساب</li>
+                <li class="nav-item"><a class="nav-link" href="/logout"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</a></li>
+            </ul>
+        </nav>
+
+        <!-- المحتوى الرئيسي -->
+        <div class="main-content">
+            
+            <!-- الشريط العلوي -->
+            <nav class="navbar-top">
+                <button class="toggle-sidebar" id="toggleSidebar"><i class="fas fa-bars"></i></button>
+                <div class="user-info">
+                    <span class="user-name" id="userName">مدير النظام</span>
+                    <div class="user-avatar" id="userAvatar">م</div>
+                </div>
+            </nav>
+
+            <!-- محتوى الصفحة -->
+            <div class="page-content">
+                
+                <!-- عنوان الصفحة -->
+                <div class="page-header">
+                    <h4><i class="fas fa-tshirt me-2"></i> إدارة الكسوة</h4>
+                    <div>
+                        <button class="btn btn-gold" id="addClothingBtn"><i class="fas fa-plus"></i> إضافة كسوة</button>
+                        <button class="btn btn-outline-secondary" id="exportClothingBtn"><i class="fas fa-file-export"></i> تصدير</button>
+                        <button class="btn btn-outline-secondary" id="printClothingBtn"><i class="fas fa-print"></i> طباعة</button>
+                        <button class="btn btn-outline-secondary" id="refreshClothingBtn"><i class="fas fa-sync"></i></button>
+                    </div>
+                </div>
+
+                <!-- فلتر البحث -->
+                <div class="row g-3 mb-3">
+                    <div class="col-md-3">
+                        <input type="text" class="form-control" id="searchClothing" placeholder="بحث في الكسوة...">
+                    </div>
+                    <div class="col-md-2">
+                        <select class="form-select" id="filterSeason">
+                            <option value="">جميع المواسم</option>
+                            <option value="صيفي">صيفي</option>
+                            <option value="شتوي">شتوي</option>
+                            <option value="ربيعي">ربيعي</option>
+                            <option value="خريفي">خريفي</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <input type="date" class="form-control" id="filterDateFrom" placeholder="من تاريخ">
+                    </div>
+                    <div class="col-md-2">
+                        <input type="date" class="form-control" id="filterDateTo" placeholder="إلى تاريخ">
+                    </div>
+                </div>
+
+                <!-- جدول الكسوة -->
+                <div class="table-wrapper">
+                    <table class="table table-striped table-hover" id="clothingTable">
+                        <thead>
+                            <tr>
+                                <th>اليتيم</th>
+                                <th>تاريخ التوزيع</th>
+                                <th>الموسم</th>
+                                <th>نوع الملابس</th>
+                                <th>المقاس</th>
+                                <th>اللون</th>
+                                <th>الكمية</th>
+                                <th>السعر الإجمالي</th>
+                                <th>الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="clothingTableBody">
+                            <!-- يتم ملؤها بواسطة JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- إحصائيات سريعة -->
+                <div class="row g-3 mt-3" id="clothingStats">
+                    <!-- يتم ملؤها بواسطة JavaScript -->
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== نموذج إضافة / تعديل كسوة (Modal) ===== -->
+    <div class="modal fade" id="clothingModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="clothingFormTitle">إضافة كسوة جديدة</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="clothingForm">
+                    <div class="modal-body">
+                        <input type="hidden" id="clothingId">
+                        
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">اليتيم *</label>
+                                <select class="form-select" id="clothingOrphanId" required>
+                                    <option value="">اختر يتيم</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">تاريخ التوزيع *</label>
+                                <input type="date" class="form-control" id="distributionDate" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">الموسم *</label>
+                                <select class="form-select" id="season" required>
+                                    <option value="شتوي">شتوي</option>
+                                    <option value="صيفي">صيفي</option>
+                                    <option value="ربيعي">ربيعي</option>
+                                    <option value="خريفي">خريفي</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">نوع الملابس *</label>
+                                <input type="text" class="form-control" id="clothingType" placeholder="مثل: جاكيت، حذاء، قميص" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">المقاس</label>
+                                <input type="text" class="form-control" id="size" placeholder="مثل: XL, 42, كبير">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">اللون</label>
+                                <input type="text" class="form-control" id="color" placeholder="مثل: أحمر، أزرق">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">الكمية *</label>
+                                <input type="number" class="form-control" id="clothingQuantity" min="1" value="1" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">سعر الوحدة (ريال)</label>
+                                <input type="number" class="form-control" id="unitPrice" step="0.01" min="0">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">السعر الإجمالي (ريال)</label>
+                                <input type="number" class="form-control" id="totalPrice" step="0.01" min="0" readonly>
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label">ملاحظات</label>
+                                <textarea class="form-control" id="clothingNotes" rows="2"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" id="clothingResetBtn">إلغاء</button>
+                        <button type="submit" class="btn btn-gold" id="clothingSubmitBtn">إضافة</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== عرض تفاصيل الكسوة (Modal) ===== -->
+    <div class="modal fade" id="clothingDetailModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">تفاصيل الكسوة</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="clothingDetailContent">
+                    <!-- يتم ملؤها بواسطة JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== JavaScript ===== -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.8/js/dataTables.bootstrap5.min.js"></script>
+    <script src="../js/app.js"></script>
+    <script src="../js/clothing.js"></script>
+
+</body>
+</html>

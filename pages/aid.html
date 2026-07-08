@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة المساعدات - نظام الشوكاني</title>
+    
+    <!-- Bootstrap 5 RTL -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- DataTables -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/dataTables.bootstrap5.min.css">
+    <!-- الأنماط العامة -->
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/forms.css">
+    <link rel="stylesheet" href="../css/tables.css">
+</head>
+<body>
+
+    <div class="wrapper">
+        <!-- ===== القائمة الجانبية (Sidebar) ===== -->
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-brand">
+                <i class="fas fa-hands-helping"></i>
+                <h3>نظام <span>الشوكاني</span></h3>
+            </div>
+            <ul class="nav flex-column">
+                <li class="nav-item"><a class="nav-link" href="/dashboard"><i class="fas fa-chart-pie"></i> لوحة التحكم</a></li>
+                <li class="nav-group-title">إدارة البيانات</li>
+                <li class="nav-item"><a class="nav-link" href="/pages/orphans.html"><i class="fas fa-child"></i> الأيتام</a></li>
+                <li class="nav-item"><a class="nav-link" href="/pages/families.html"><i class="fas fa-users"></i> الأسر</a></li>
+                <li class="nav-item"><a class="nav-link" href="/pages/sponsorships.html"><i class="fas fa-hand-holding-heart"></i> الكفالات</a></li>
+                <li class="nav-item"><a class="nav-link active" href="/pages/aid.html"><i class="fas fa-gift"></i> المساعدات</a></li>
+                <li class="nav-item"><a class="nav-link" href="/pages/clothing.html"><i class="fas fa-tshirt"></i> الكسوة</a></li>
+                <li class="nav-item"><a class="nav-link" href="/pages/documents.html"><i class="fas fa-file-alt"></i> الوثائق</a></li>
+                <li class="nav-group-title">التقارير والإعدادات</li>
+                <li class="nav-item"><a class="nav-link" href="/pages/reports.html"><i class="fas fa-file-alt"></i> التقارير</a></li>
+                <li class="nav-item"><a class="nav-link" href="/pages/users.html"><i class="fas fa-users-cog"></i> المستخدمون</a></li>
+                <li class="nav-item"><a class="nav-link" href="/pages/settings.html"><i class="fas fa-cog"></i> الإعدادات</a></li>
+                <li class="nav-item"><a class="nav-link" href="/pages/backups.html"><i class="fas fa-database"></i> النسخ الاحتياطي</a></li>
+                <li class="nav-item"><a class="nav-link" href="/pages/logs.html"><i class="fas fa-history"></i> سجل العمليات</a></li>
+                <li class="nav-item"><a class="nav-link" href="/pages/notifications.html"><i class="fas fa-bell"></i> التنبيهات</a></li>
+                <li class="nav-group-title">الحساب</li>
+                <li class="nav-item"><a class="nav-link" href="/logout"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</a></li>
+            </ul>
+        </nav>
+
+        <!-- ===== المحتوى الرئيسي ===== -->
+        <div class="main-content">
+            
+            <!-- الشريط العلوي -->
+            <nav class="navbar-top">
+                <button class="toggle-sidebar" id="toggleSidebar"><i class="fas fa-bars"></i></button>
+                <div class="user-info">
+                    <span class="user-name" id="userName">مدير النظام</span>
+                    <div class="user-avatar" id="userAvatar">م</div>
+                </div>
+            </nav>
+
+            <!-- محتوى الصفحة -->
+            <div class="page-content">
+                
+                <!-- عنوان الصفحة -->
+                <div class="page-header">
+                    <h4><i class="fas fa-gift me-2"></i> إدارة المساعدات</h4>
+                    <div>
+                        <button class="btn btn-gold" id="addAidBtn"><i class="fas fa-plus"></i> مساعدة جديدة</button>
+                        <button class="btn btn-outline-secondary" id="exportAidBtn"><i class="fas fa-file-export"></i> تصدير</button>
+                        <button class="btn btn-outline-secondary" id="printAidBtn"><i class="fas fa-print"></i> طباعة</button>
+                        <button class="btn btn-outline-secondary" id="refreshAidBtn"><i class="fas fa-sync"></i></button>
+                    </div>
+                </div>
+
+                <!-- فلتر البحث -->
+                <div class="row g-3 mb-3">
+                    <div class="col-md-3">
+                        <input type="text" class="form-control" id="searchAid" placeholder="بحث في المساعدات...">
+                    </div>
+                    <div class="col-md-2">
+                        <select class="form-select" id="filterAidType">
+                            <option value="">جميع الأنواع</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <input type="date" class="form-control" id="filterDateFrom" placeholder="من تاريخ">
+                    </div>
+                    <div class="col-md-2">
+                        <input type="date" class="form-control" id="filterDateTo" placeholder="إلى تاريخ">
+                    </div>
+                </div>
+
+                <!-- جدول المساعدات -->
+                <div class="table-wrapper">
+                    <table class="table table-striped table-hover" id="aidTable">
+                        <thead>
+                            <tr>
+                                <th>اليتيم</th>
+                                <th>نوع المساعدة</th>
+                                <th>التاريخ</th>
+                                <th>المبلغ</th>
+                                <th>الكمية</th>
+                                <th>طريقة التوزيع</th>
+                                <th>المستلم</th>
+                                <th>الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="aidTableBody">
+                            <!-- يتم ملؤها بواسطة JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- إحصائيات سريعة -->
+                <div class="row g-3 mt-3" id="aidStats">
+                    <!-- يتم ملؤها بواسطة JavaScript -->
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== نموذج إضافة / تعديل مساعدة (Modal) ===== -->
+    <div class="modal fade" id="aidModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="aidFormTitle">إضافة مساعدة جديدة</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="aidForm">
+                    <div class="modal-body">
+                        <input type="hidden" id="aidRecordId">
+                        
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">اليتيم *</label>
+                                <select class="form-select" id="aidOrphanId" required>
+                                    <option value="">اختر يتيم</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">نوع المساعدة *</label>
+                                <select class="form-select" id="aidTypeId" required>
+                                    <option value="">اختر نوع المساعدة</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">التاريخ *</label>
+                                <input type="date" class="form-control" id="aidDate" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">المبلغ (ريال)</label>
+                                <input type="number" class="form-control" id="aidAmount" step="0.01" min="0">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">الكمية</label>
+                                <input type="number" class="form-control" id="aidQuantity" min="0" step="0.01">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">الوحدة</label>
+                                <input type="text" class="form-control" id="aidUnit" placeholder="مثل: كيلو، لتر، حبة">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">طريقة التوزيع</label>
+                                <select class="form-select" id="distributionMethod">
+                                    <option value="يدوي">يدوي</option>
+                                    <option value="بريد">بريد</option>
+                                    <option value="تحويل">تحويل</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">اسم المستلم</label>
+                                <input type="text" class="form-control" id="recipientName" placeholder="اسم الشخص المستلم">
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label">الوصف</label>
+                                <textarea class="form-control" id="aidDescription" rows="2"></textarea>
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label">ملاحظات</label>
+                                <textarea class="form-control" id="aidNotes" rows="2"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" id="aidResetBtn">إلغاء</button>
+                        <button type="submit" class="btn btn-gold" id="aidSubmitBtn">إضافة</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== عرض تفاصيل المساعدة (Modal) ===== -->
+    <div class="modal fade" id="aidDetailModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">تفاصيل المساعدة</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="aidDetailContent">
+                    <!-- يتم ملؤها بواسطة JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== JavaScript ===== -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.8/js/dataTables.bootstrap5.min.js"></script>
+    <script src="../js/app.js"></script>
+    <script src="../js/aid.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>التنبيهات - نظام الشوكاني</title>
+    
+    <!-- Bootstrap 5 RTL -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- DataTables -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/dataTables.bootstrap5.min.css">
+    <!-- الأنماط العامة -->
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/forms.css">
+    <link rel="stylesheet" href="../css/tables.css">
+</head>
+<body>
+
+    <div class="wrapper">
+        <!-- القائمة الجانبية -->
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-brand">
+                <i class="fas fa-hands-helping"></i>
+                <h3>نظام <span>الشوكاني</span></h3>
+            </div>
+            <ul class="nav flex-column">
+                <li class="nav-item"><a class="nav-link" href="/dashboard"><i class="fas fa-chart-pie"></i> لوحة التحكم</a></li>
+                <li class="nav-group-title">إدارة البيانات</li>
+                <li class="nav-item"><a class="nav-link" href="/pages/orphans.html"><i class="fas fa-child"></i> الأيتام</a></li>
+                <li class="nav-item"><a class="nav-link" href="/pages/families.html"><i class="fas fa-users"></i> الأسر</a></li>
+                <li class="nav-item"><a class="nav-link" href="/pages/sponsorships.html"><i class="fas fa-hand-holding-heart"></i> الكفالات</a></li>
+                <li class="nav-item"><a class="nav-link" href="/pages/aid.html"><i class="fas fa-gift"></i> المساعدات</a></li>
+                <li class="nav-item"><a class="nav-link" href="/pages/clothing.html"><i class="fas fa-tshirt"></i> الكسوة</a></li>
+                <li class="nav-item"><a class="nav-link" href="/pages/documents.html"><i class="fas fa-file-alt"></i> الوثائق</a></li>
+                <li class="nav-group-title">التقارير والإعدادات</li>
+                <li class="nav-item"><a class="nav-link" href="/pages/reports.html"><i class="fas fa-file-alt"></i> التقارير</a></li>
+                <li class="nav-item"><a class="nav-link" href="/pages/users.html"><i class="fas fa-users-cog"></i> المستخدمون</a></li>
+                <li class="nav-item"><a class="nav-link" href="/pages/settings.html"><i class="fas fa-cog"></i> الإعدادات</a></li>
+                <li class="nav-item"><a class="nav-link" href="/pages/backups.html"><i class="fas fa-database"></i> النسخ الاحتياطي</a></li>
+                <li class="nav-item"><a class="nav-link" href="/pages/logs.html"><i class="fas fa-history"></i> سجل العمليات</a></li>
+                <li class="nav-item"><a class="nav-link active" href="/pages/notifications.html"><i class="fas fa-bell"></i> التنبيهات</a></li>
+                <li class="nav-group-title">الحساب</li>
+                <li class="nav-item"><a class="nav-link" href="/logout"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</a></li>
+            </ul>
+        </nav>
+
+        <!-- المحتوى الرئيسي -->
+        <div class="main-content">
+            
+            <!-- الشريط العلوي -->
+            <nav class="navbar-top">
+                <button class="toggle-sidebar" id="toggleSidebar"><i class="fas fa-bars"></i></button>
+                <div class="user-info">
+                    <span class="user-name" id="userName">مدير النظام</span>
+                    <div class="user-avatar" id="userAvatar">م</div>
+                </div>
+            </nav>
+
+            <!-- محتوى الصفحة -->
+            <div class="page-content">
+                
+                <!-- عنوان الصفحة -->
+                <div class="page-header">
+                    <h4><i class="fas fa-bell me-2"></i> التنبيهات</h4>
+                    <div>
+                        <button class="btn btn-success" id="markAllReadBtn"><i class="fas fa-check-double"></i> تحديد الكل كمقروء</button>
+                        <button class="btn btn-danger" id="deleteAllReadBtn"><i class="fas fa-trash"></i> حذف المقروءة</button>
+                        <button class="btn btn-outline-secondary" id="exportNotificationsBtn"><i class="fas fa-file-export"></i> تصدير</button>
+                        <button class="btn btn-outline-secondary" id="printNotificationsBtn"><i class="fas fa-print"></i> طباعة</button>
+                        <button class="btn btn-outline-secondary" id="refreshNotificationsBtn"><i class="fas fa-sync"></i></button>
+                        <button class="btn btn-outline-secondary" id="clearNotifFiltersBtn"><i class="fas fa-times"></i> مسح الفلتر</button>
+                    </div>
+                </div>
+
+                <!-- فلتر البحث -->
+                <div class="row g-3 mb-3">
+                    <div class="col-md-3">
+                        <input type="text" class="form-control" id="searchNotifications" placeholder="بحث في التنبيهات...">
+                    </div>
+                    <div class="col-md-2">
+                        <select class="form-select" id="filterNotificationType">
+                            <option value="">جميع الأنواع</option>
+                            <option value="معلومة">معلومة</option>
+                            <option value="تحذير">تحذير</option>
+                            <option value="خطأ">خطأ</option>
+                            <option value="تذكير">تذكير</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <select class="form-select" id="filterRead">
+                            <option value="">الحالة</option>
+                            <option value="0">غير مقروء</option>
+                            <option value="1">مقروء</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <input type="date" class="form-control" id="filterNotifDateFrom" placeholder="من تاريخ">
+                    </div>
+                    <div class="col-md-2">
+                        <input type="date" class="form-control" id="filterNotifDateTo" placeholder="إلى تاريخ">
+                    </div>
+                </div>
+
+                <!-- جدول التنبيهات -->
+                <div class="table-wrapper">
+                    <table class="table table-striped table-hover" id="notificationsTable">
+                        <thead>
+                            <tr>
+                                <th>العنوان</th>
+                                <th>النوع</th>
+                                <th>الرسالة</th>
+                                <th>الحالة</th>
+                                <th>التاريخ</th>
+                                <th>الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="notificationsTableBody">
+                            <!-- يتم ملؤها بواسطة JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- إحصائيات سريعة -->
+                <div class="row g-3 mt-3" id="notifStats">
+                    <!-- يتم ملؤها بواسطة JavaScript -->
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== عرض تفاصيل التنبيه (Modal) ===== -->
+    <div class="modal fade" id="notifDetailModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">تفاصيل التنبيه</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="notifDetailContent">
+                    <!-- يتم ملؤها بواسطة JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== JavaScript ===== -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.8/js/dataTables.bootstrap5.min.js"></script>
+    <script src="../js/app.js"></script>
+    <script src="../js/notifications.js"></script>
+
+</body>
+</html>

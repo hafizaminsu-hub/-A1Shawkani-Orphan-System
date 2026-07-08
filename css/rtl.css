@@ -1,0 +1,341 @@
+/* ============================================================
+   الملف: rtl.css
+   الوصف: أنماط إضافية للاتجاه من اليمين إلى اليسار (RTL)
+   الإصدار: 1.0.0
+   ============================================================ */
+
+/* ============================================================
+   1. ضبط أساسي للاتجاه
+   ============================================================ */
+body {
+    direction: rtl;
+    text-align: right;
+}
+
+/* ============================================================
+   2. ضبط الهوامش الداخلية والخارجية للعناصر الشائعة
+   ============================================================ */
+
+/* 2.1 القوائم (Navigation) */
+.nav {
+    padding-right: 0;
+    padding-left: 0;
+}
+
+.navbar-nav .nav-link {
+    padding-right: 0.5rem;
+    padding-left: 0.5rem;
+}
+
+/* 2.2 الأزرار (Buttons) */
+.btn {
+    text-align: center;
+}
+
+.btn .me-1,
+.btn .me-2,
+.btn .me-3 {
+    margin-right: 0 !important;
+    margin-left: 0.25rem !important;
+}
+
+.btn .ms-1,
+.btn .ms-2,
+.btn .ms-3 {
+    margin-left: 0 !important;
+    margin-right: 0.25rem !important;
+}
+
+/* 2.3 الحقول (Forms) */
+.form-control,
+.form-select {
+    text-align: right;
+}
+
+.form-floating > label {
+    right: 0;
+    left: auto;
+    padding-right: 1.2rem;
+    padding-left: 0;
+}
+
+/* أيقونات داخل الحقول (مثل login.js) */
+.input-group-icon .input-icon {
+    right: 1rem;
+    left: auto;
+}
+
+/* 2.4 الجداول (Tables) */
+.table {
+    text-align: right;
+}
+
+.table th,
+.table td {
+    text-align: right;
+}
+
+/* 2.5 البطاقات (Cards) */
+.card-header,
+.card-body,
+.card-footer {
+    text-align: right;
+}
+
+/* 2.6 القائمة الجانبية (Sidebar) */
+.sidebar {
+    right: 0;
+    left: auto;
+    border-right: none;
+    border-left: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: -4px 0 20px rgba(0, 0, 0, 0.2);
+}
+
+.sidebar .nav-link {
+    padding-right: 1.8rem;
+    padding-left: 1.2rem;
+    border-right: 4px solid transparent;
+    border-left: none;
+}
+
+.sidebar .nav-link:hover,
+.sidebar .nav-link.active {
+    border-right-color: var(--gold);
+    border-left-color: transparent;
+}
+
+/* 2.7 المحتوى الرئيسي */
+.main-content {
+    margin-right: var(--sidebar-width);
+    margin-left: 0;
+}
+
+/* 2.8 الشريط العلوي (Navbar) */
+.navbar-top .user-info {
+    gap: 0.75rem;
+}
+
+.navbar-top .toggle-sidebar {
+    margin-left: auto;
+    margin-right: 0;
+}
+
+/* ============================================================
+   3. تصحيحات لـ Bootstrap 5 في وضع RTL
+   ============================================================ */
+
+/* 3.1 الفلوت (Float) */
+.float-start {
+    float: right !important;
+}
+.float-end {
+    float: left !important;
+}
+
+/* 3.2 النصوص (Text alignment) */
+.text-start {
+    text-align: right !important;
+}
+.text-end {
+    text-align: left !important;
+}
+
+/* 3.3 الهوامش (Margins) */
+.me-1 {
+    margin-right: 0 !important;
+    margin-left: 0.25rem !important;
+}
+.me-2 {
+    margin-right: 0 !important;
+    margin-left: 0.5rem !important;
+}
+.me-3 {
+    margin-right: 0 !important;
+    margin-left: 1rem !important;
+}
+
+.ms-1 {
+    margin-left: 0 !important;
+    margin-right: 0.25rem !important;
+}
+.ms-2 {
+    margin-left: 0 !important;
+    margin-right: 0.5rem !important;
+}
+.ms-3 {
+    margin-left: 0 !important;
+    margin-right: 1rem !important;
+}
+
+/* 3.4 الحواف (Borders) */
+.border-start {
+    border-right: 1px solid #dee2e6 !important;
+    border-left: none !important;
+}
+.border-end {
+    border-left: 1px solid #dee2e6 !important;
+    border-right: none !important;
+}
+
+.rounded-start {
+    border-top-right-radius: 0.375rem !important;
+    border-bottom-right-radius: 0.375rem !important;
+    border-top-left-radius: 0 !important;
+    border-bottom-left-radius: 0 !important;
+}
+.rounded-end {
+    border-top-left-radius: 0.375rem !important;
+    border-bottom-left-radius: 0.375rem !important;
+    border-top-right-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+}
+
+/* 3.5 قوائم التنقل (Breadcrumb) */
+.breadcrumb-item + .breadcrumb-item {
+    padding-right: 0.5rem;
+    padding-left: 0;
+}
+.breadcrumb-item + .breadcrumb-item::before {
+    float: right;
+    padding-right: 0;
+    padding-left: 0.5rem;
+    content: var(--bs-breadcrumb-divider, "/");
+}
+
+/* 3.6 الإزاحة في الشبكة (Grid) */
+.offset-1 {
+    margin-right: 8.33333333%;
+    margin-left: 0;
+}
+.offset-2 {
+    margin-right: 16.66666667%;
+    margin-left: 0;
+}
+.offset-3 {
+    margin-right: 25%;
+    margin-left: 0;
+}
+.offset-4 {
+    margin-right: 33.33333333%;
+    margin-left: 0;
+}
+.offset-5 {
+    margin-right: 41.66666667%;
+    margin-left: 0;
+}
+.offset-6 {
+    margin-right: 50%;
+    margin-left: 0;
+}
+.offset-7 {
+    margin-right: 58.33333333%;
+    margin-left: 0;
+}
+.offset-8 {
+    margin-right: 66.66666667%;
+    margin-left: 0;
+}
+.offset-9 {
+    margin-right: 75%;
+    margin-left: 0;
+}
+.offset-10 {
+    margin-right: 83.33333333%;
+    margin-left: 0;
+}
+.offset-11 {
+    margin-right: 91.66666667%;
+    margin-left: 0;
+}
+
+/* ============================================================
+   4. تصحيح خاص بالقائمة الجانبية المطوية (Collapsed)
+   ============================================================ */
+.sidebar-collapsed .sidebar {
+    transform: translateX(100%);
+}
+
+.sidebar-collapsed .main-content {
+    margin-right: 0;
+    margin-left: 0;
+}
+
+/* ============================================================
+   5. تصحيح لوسائل الإعلام (Media Queries) الخاصة بـ RTL
+   ============================================================ */
+@media (max-width: 992px) {
+    .sidebar {
+        transform: translateX(100%);
+        /* مخفية على اليمين */
+        box-shadow: none;
+    }
+
+    .sidebar.show {
+        transform: translateX(0);
+        box-shadow: -4px 0 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .main-content {
+        margin-right: 0;
+        margin-left: 0;
+    }
+
+    .navbar-top {
+        padding-right: 1rem;
+        padding-left: 1rem;
+    }
+
+    .page-content {
+        padding-right: 1.2rem;
+        padding-left: 1.2rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .navbar-top .user-info .user-name {
+        display: none;
+    }
+
+    .stat-card .stat-number {
+        font-size: 1.4rem;
+    }
+}
+
+/* ============================================================
+   6. تصحيح أيقونات Font Awesome في RTL
+   ============================================================ */
+.fa-chevron-right {
+    transform: scaleX(-1);
+}
+.fa-chevron-left {
+    transform: scaleX(-1);
+}
+.fa-arrow-right {
+    transform: scaleX(-1);
+}
+.fa-arrow-left {
+    transform: scaleX(-1);
+}
+
+/* بعض الأيقونات التي تبدو أفضل معكوسة في RTL */
+.fa-hand-holding-heart {
+    transform: scaleX(-1);
+}
+
+/* ============================================================
+   7. دعم ربط الـ Scrollbar في RTL
+   ============================================================ */
+.sidebar::-webkit-scrollbar {
+    width: 4px;
+}
+.sidebar::-webkit-scrollbar-track {
+    background: transparent;
+}
+.sidebar::-webkit-scrollbar-thumb {
+    background: var(--gold);
+    border-radius: 10px;
+}
+
+/* ============================================================
+   نهاية الملف
+   ============================================================ */

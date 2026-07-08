@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة الأسر - نظام الشوكاني</title>
+    
+    <!-- Bootstrap 5 RTL -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- DataTables -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/dataTables.bootstrap5.min.css">
+    <!-- الأنماط العامة -->
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/forms.css">
+    <link rel="stylesheet" href="../css/tables.css">
+</head>
+<body>
+
+    <div class="wrapper">
+        <!-- القائمة الجانبية -->
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-brand">
+                <i class="fas fa-hands-helping"></i>
+                <h3>نظام <span>الشوكاني</span></h3>
+            </div>
+            <ul class="nav flex-column">
+                <li class="nav-item"><a class="nav-link" href="/dashboard"><i class="fas fa-chart-pie"></i> لوحة التحكم</a></li>
+                <li class="nav-group-title">إدارة البيانات</li>
+                <li class="nav-item"><a class="nav-link" href="/pages/orphans.html"><i class="fas fa-child"></i> الأيتام</a></li>
+                <li class="nav-item"><a class="nav-link active" href="/pages/families.html"><i class="fas fa-users"></i> الأسر</a></li>
+                <li class="nav-item"><a class="nav-link" href="/pages/sponsorships.html"><i class="fas fa-hand-holding-heart"></i> الكفالات</a></li>
+                <li class="nav-item"><a class="nav-link" href="/pages/aid.html"><i class="fas fa-gift"></i> المساعدات</a></li>
+                <li class="nav-item"><a class="nav-link" href="/pages/clothing.html"><i class="fas fa-tshirt"></i> الكسوة</a></li>
+                <li class="nav-item"><a class="nav-link" href="/pages/documents.html"><i class="fas fa-file-alt"></i> الوثائق</a></li>
+                <li class="nav-group-title">التقارير والإعدادات</li>
+                <li class="nav-item"><a class="nav-link" href="/pages/reports.html"><i class="fas fa-file-alt"></i> التقارير</a></li>
+                <li class="nav-item"><a class="nav-link" href="/pages/users.html"><i class="fas fa-users-cog"></i> المستخدمون</a></li>
+                <li class="nav-item"><a class="nav-link" href="/pages/settings.html"><i class="fas fa-cog"></i> الإعدادات</a></li>
+                <li class="nav-item"><a class="nav-link" href="/pages/backups.html"><i class="fas fa-database"></i> النسخ الاحتياطي</a></li>
+                <li class="nav-item"><a class="nav-link" href="/pages/logs.html"><i class="fas fa-history"></i> سجل العمليات</a></li>
+                <li class="nav-item"><a class="nav-link" href="/pages/notifications.html"><i class="fas fa-bell"></i> التنبيهات</a></li>
+                <li class="nav-group-title">الحساب</li>
+                <li class="nav-item"><a class="nav-link" href="/logout"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</a></li>
+            </ul>
+        </nav>
+
+        <!-- المحتوى الرئيسي -->
+        <div class="main-content">
+            
+            <!-- الشريط العلوي -->
+            <nav class="navbar-top">
+                <button class="toggle-sidebar" id="toggleSidebar"><i class="fas fa-bars"></i></button>
+                <div class="user-info">
+                    <span class="user-name" id="userName">مدير النظام</span>
+                    <div class="user-avatar" id="userAvatar">م</div>
+                </div>
+            </nav>
+
+            <!-- محتوى الصفحة -->
+            <div class="page-content">
+                
+                <!-- عنوان الصفحة -->
+                <div class="page-header">
+                    <h4><i class="fas fa-users me-2"></i> إدارة الأسر</h4>
+                    <div>
+                        <button class="btn btn-gold" id="addFamilyBtn"><i class="fas fa-plus"></i> إضافة أسرة</button>
+                        <button class="btn btn-outline-secondary" id="exportFamiliesBtn"><i class="fas fa-file-export"></i> تصدير</button>
+                        <button class="btn btn-outline-secondary" id="printFamiliesBtn"><i class="fas fa-print"></i> طباعة</button>
+                        <button class="btn btn-outline-secondary" id="refreshFamiliesBtn"><i class="fas fa-sync"></i></button>
+                    </div>
+                </div>
+
+                <!-- فلتر البحث -->
+                <div class="row g-3 mb-3">
+                    <div class="col-md-4">
+                        <input type="text" class="form-control" id="searchFamilies" placeholder="بحث في الأسر...">
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select" id="filterVillage">
+                            <option value="">جميع القرى</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- جدول الأسر -->
+                <div class="table-wrapper">
+                    <table class="table table-striped table-hover" id="familiesTable">
+                        <thead>
+                            <tr>
+                                <th>رقم الأسرة</th>
+                                <th>اسم الأسرة / ولي الأمر</th>
+                                <th>هاتف ولي الأمر</th>
+                                <th>القرية</th>
+                                <th>الدخل الشهري</th>
+                                <th>عدد الأفراد</th>
+                                <th>نوع السكن</th>
+                                <th>الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="familiesTableBody">
+                            <!-- يتم ملؤها بواسطة JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- إحصائيات سريعة -->
+                <div class="row g-3 mt-3" id="familiesStats">
+                    <!-- يتم ملؤها بواسطة JavaScript -->
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== نموذج إضافة / تعديل أسرة (Modal) ===== -->
+    <div class="modal fade" id="familyModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="familyFormTitle">إضافة أسرة جديدة</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="familyForm">
+                    <div class="modal-body">
+                        <input type="hidden" id="familyId">
+                        
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">رقم الأسرة</label>
+                                <input type="text" class="form-control" id="familyNumber" readonly>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">اسم الأسرة *</label>
+                                <input type="text" class="form-control" id="familyName" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">اسم ولي الأمر *</label>
+                                <input type="text" class="form-control" id="guardianName" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">هاتف ولي الأمر *</label>
+                                <input type="tel" class="form-control" id="guardianPhone" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">هاتف بديل</label>
+                                <input type="tel" class="form-control" id="guardianPhoneAlt">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">رقم هوية ولي الأمر</label>
+                                <input type="text" class="form-control" id="guardianIdNumber">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">القرية</label>
+                                <select class="form-select" id="villageId">
+                                    <option value="">اختر القرية</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">العنوان</label>
+                                <input type="text" class="form-control" id="address">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">الدخل الشهري (ريال)</label>
+                                <input type="number" class="form-control" id="monthlyIncome" min="0" step="0.01">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">مصدر الدخل</label>
+                                <input type="text" class="form-control" id="incomeSource">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">عدد أفراد الأسرة</label>
+                                <input type="number" class="form-control" id="familyMembersCount" min="1" value="1">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">نوع السكن</label>
+                                <select class="form-select" id="housingType">
+                                    <option value="">اختر</option>
+                                    <option value="ملك">ملك</option>
+                                    <option value="إيجار">إيجار</option>
+                                    <option value="مؤقت">مؤقت</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">حالة السكن</label>
+                                <select class="form-select" id="housingCondition">
+                                    <option value="">اختر</option>
+                                    <option value="جيد">جيد</option>
+                                    <option value="متوسط">متوسط</option>
+                                    <option value="متداعٍ">متداعٍ</option>
+                                </select>
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label">ملاحظات</label>
+                                <textarea class="form-control" id="familyNotes" rows="2"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" id="familyResetBtn">إلغاء</button>
+                        <button type="submit" class="btn btn-gold" id="familySubmitBtn">إضافة</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== عرض تفاصيل الأسرة (Modal) ===== -->
+    <div class="modal fade" id="familyDetailModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">تفاصيل الأسرة</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="familyDetailContent">
+                    <!-- يتم ملؤها بواسطة JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== JavaScript ===== -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.8/js/dataTables.bootstrap5.min.js"></script>
+    <script src="../js/app.js"></script>
+    <script src="../js/families.js"></script>
+
+</body>
+</html>

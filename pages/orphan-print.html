@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>طباعة بيانات يتيم - نظام الشوكاني</title>
+    
+    <!-- Bootstrap 5 RTL -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- الأنماط العامة -->
+    <link rel="stylesheet" href="../css/style.css">
+    
+    <style>
+        /* أنماط خاصة بالطباعة */
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+            .print-container {
+                padding: 20px;
+                background: white;
+            }
+            .page-header-print {
+                border-bottom: 2px solid #1b263b;
+                padding-bottom: 10px;
+                margin-bottom: 20px;
+            }
+            .info-row {
+                display: flex;
+                padding: 6px 0;
+                border-bottom: 1px solid #f0f2f5;
+            }
+            .info-label {
+                font-weight: 600;
+                width: 180px;
+                flex-shrink: 0;
+                color: #1b263b;
+            }
+            .info-value {
+                flex: 1;
+                color: #212529;
+            }
+            .status-badge {
+                display: inline-block;
+                padding: 4px 12px;
+                border-radius: 20px;
+                font-size: 0.85rem;
+                font-weight: 600;
+            }
+            .status-active { background: #d4edda; color: #155724; }
+            .status-inactive { background: #fff3cd; color: #856404; }
+            .status-ended { background: #f8d7da; color: #721c24; }
+            .footer-print {
+                margin-top: 30px;
+                padding-top: 15px;
+                border-top: 1px solid #dee2e6;
+                text-align: center;
+                font-size: 0.8rem;
+                color: #6c757d;
+            }
+        }
+        body {
+            background: #f4f6f9;
+            padding: 20px;
+        }
+        .print-container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+        }
+        .print-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .print-header .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .print-header .brand i {
+            font-size: 2rem;
+            color: #d4a373;
+        }
+        .print-header .brand h3 {
+            margin: 0;
+            font-weight: 700;
+            color: #0d1b2a;
+        }
+        .print-header .brand h3 span {
+            color: #d4a373;
+        }
+        .btn-print {
+            background: #1b263b;
+            color: white;
+            border: none;
+            padding: 8px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .btn-print:hover {
+            background: #0d1b2a;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        }
+        .btn-back {
+            background: #e9ecef;
+            color: #212529;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            margin-left: 10px;
+            transition: all 0.3s;
+        }
+        .btn-back:hover {
+            background: #dee2e6;
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px 30px;
+        }
+        .info-item {
+            display: flex;
+            padding: 6px 0;
+            border-bottom: 1px solid #f0f2f5;
+        }
+        .info-item .label {
+            font-weight: 600;
+            width: 140px;
+            flex-shrink: 0;
+            color: #1b263b;
+        }
+        .info-item .value {
+            flex: 1;
+            color: #212529;
+        }
+        .section-title {
+            font-weight: 700;
+            color: #0d1b2a;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            padding-bottom: 6px;
+            border-bottom: 2px solid #d4a373;
+        }
+        .orphan-photo {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: #6c757d;
+            margin-right: 20px;
+            flex-shrink: 0;
+        }
+        .header-top {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        @media (max-width: 768px) {
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+            .header-top {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .orphan-photo {
+                margin-right: 0;
+                margin-bottom: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="print-container" id="printContainer">
+        
+        <!-- رأس الصفحة (للشاشة فقط) -->
+        <div class="print-header no-print">
+            <div class="brand">
+                <i class="fas fa-hands-helping"></i>
+                <h3>نظام <span>الشوكاني</span></h3>
+            </div>
+            <div>
+                <button class="btn-back" onclick="window.location.href='/pages/orphans.html'">
+                    <i class="fas fa-arrow-right"></i> العودة
+                </button>
+                <button class="btn-print" onclick="window.print()">
+                    <i class="fas fa-print"></i> طباعة
+                </button>
+            </div>
+        </div>
+
+        <!-- محتوى الطباعة -->
+        <div class="print-content">
+            
+            <!-- العنوان -->
+            <div class="page-header-print">
+                <h4 style="margin:0; font-weight:700; color:#0d1b2a;">
+                    <i class="fas fa-child" style="color:#d4a373;"></i> بطاقة بيانات يتيم
+                </h4>
+                <small style="color:#6c757d;">تم الإنشاء: <span id="printDate"></span></small>
+            </div>
+
+            <!-- الصورة والاسم -->
+            <div class="header-top">
+                <div class="orphan-photo">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+                <div>
+                    <h3 id="orphanFullName" style="margin:0; font-weight:700; color:#0d1b2a;">—</h3>
+                    <div>
+                        <span class="status-badge" id="statusBadge">—</span>
+                        <span class="text-muted me-2">|</span>
+                        <span class="text-muted" id="orphanCode">—</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- المعلومات الأساسية -->
+            <div class="section-title">المعلومات الأساسية</div>
+            <div class="info-grid">
+                <div class="info-item"><span class="label">الجنس</span><span class="value" id="gender">—</span></div>
+                <div class="info-item"><span class="label">تاريخ الميلاد</span><span class="value" id="birthDate">—</span></div>
+                <div class="info-item"><span class="label">مكان الميلاد</span><span class="value" id="birthPlace">—</span></div>
+                <div class="info-item"><span class="label">الجنسية</span><span class="value" id="nationality">—</span></div>
+                <div class="info-item"><span class="label">رقم الهوية</span><span class="value" id="idNumber">—</span></div>
+                <div class="info-item"><span class="label">الحالة الصحية</span><span class="value" id="healthStatus">—</span></div>
+                <div class="info-item"><span class="label">نوع الإعاقة</span><span class="value" id="disabilityType">—</span></div>
+                <div class="info-item"><span class="label">فصيلة الدم</span><span class="value" id="bloodType">—</span></div>
+                <div class="info-item"><span class="label">الأسرة</span><span class="value" id="familyName">—</span></div>
+            </div>
+
+            <!-- معلومات الوالدين -->
+            <div class="section-title">معلومات الوالدين</div>
+            <div class="info-grid">
+                <div class="info-item"><span class="label">حالة الأب</span><span class="value" id="fatherStatus">—</span></div>
+                <div class="info-item"><span class="label">تاريخ وفاة الأب</span><span class="value" id="fatherDeathDate">—</span></div>
+                <div class="info-item"><span class="label">سبب وفاة الأب</span><span class="value" id="fatherDeathCause">—</span></div>
+                <div class="info-item"><span class="label">حالة الأم</span><span class="value" id="motherStatus">—</span></div>
+                <div class="info-item"><span class="label">اسم الأم</span><span class="value" id="motherName">—</span></div>
+                <div class="info-item"><span class="label">هاتف الأم</span><span class="value" id="motherPhone">—</span></div>
+            </div>
+
+            <!-- المعلومات التعليمية -->
+            <div class="section-title">المعلومات التعليمية</div>
+            <div class="info-grid">
+                <div class="info-item"><span class="label">المدرسة</span><span class="value" id="schoolName">—</span></div>
+                <div class="info-item"><span class="label">المستوى التعليمي</span><span class="value" id="educationLevel">—</span></div>
+                <div class="info-item"><span class="label">الصف الدراسي</span><span class="value" id="grade">—</span></div>
+                <div class="info-item"><span class="label">السنة الدراسية</span><span class="value" id="academicYear">—</span></div>
+            </div>
+
+            <!-- معلومات الكفالة والتسجيل -->
+            <div class="section-title">معلومات التسجيل</div>
+            <div class="info-grid">
+                <div class="info-item"><span class="label">حالة اليتيم</span><span class="value" id="orphanStatus">—</span></div>
+                <div class="info-item"><span class="label">تاريخ التسجيل</span><span class="value" id="admissionDate">—</span></div>
+                <div class="info-item"><span class="label">تاريخ الانتهاء</span><span class="value" id="releaseDate">—</span></div>
+                <div class="info-item"><span class="label">سبب الانتهاء</span><span class="value" id="releaseReason">—</span></div>
+            </div>
+
+            <!-- الملاحظات -->
+            <div class="section-title">ملاحظات</div>
+            <div style="padding:10px; background:#f8f9fa; border-radius:8px; min-height:60px;" id="notes">
+                —
+            </div>
+
+            <!-- التذييل -->
+            <div class="footer-print">
+                <p>تم الطباعة من نظام الشوكاني لإدارة الأيتام - جميع الحقوق محفوظة &copy; 2026</p>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ===== JavaScript ===== -->
+    <script>
+        (function() {
+            'use strict';
+
+            // الحصول على بيانات اليتيم من localStorage (يتم تعبئتها من صفحة الأيتام)
+            function loadOrphanData() {
+                try {
+                    const data = localStorage.getItem('orphanPrintData');
+                    if (!data) {
+                        showError('لا توجد بيانات للعرض. يرجى العودة إلى قائمة الأيتام واختيار "طباعة".');
+                        return;
+                    }
+                    const orphan = JSON.parse(data);
+                    fillData(orphan);
+                } catch (e) {
+                    console.error('خطأ في قراءة البيانات:', e);
+                    showError('حدث خطأ في تحميل البيانات.');
+                }
+            }
+
+            function fillData(orphan) {
+                // تعيين تاريخ اليوم
+                document.getElementById('printDate').textContent = new Date().toLocaleDateString('ar-EG');
+
+                // الاسم والرمز والحالة
+                document.getElementById('orphanFullName').textContent = orphan.FullName || '—';
+                document.getElementById('orphanCode').textContent = orphan.OrphanCode || '—';
+
+                // حالة اليتيم مع لون
+                const statusBadge = document.getElementById('statusBadge');
+                const status = orphan.OrphanStatus || 'غير محدد';
+                statusBadge.textContent = status;
+                statusBadge.className = 'status-badge';
+                if (status === 'نشط') statusBadge.classList.add('status-active');
+                else if (status === 'منقطع') statusBadge.classList.add('status-inactive');
+                else if (status === 'منتهي') statusBadge.classList.add('status-ended');
+
+                // المعلومات الأساسية
+                document.getElementById('gender').textContent = orphan.Gender || '—';
+                document.getElementById('birthDate').textContent = orphan.BirthDate || '—';
+                document.getElementById('birthPlace').textContent = orphan.BirthPlace || '—';
+                document.getElementById('nationality').textContent = orphan.Nationality || '—';
+                document.getElementById('idNumber').textContent = orphan.IDNumber || '—';
+                document.getElementById('healthStatus').textContent = orphan.HealthStatus || '—';
+                document.getElementById('disabilityType').textContent = orphan.DisabilityType || '—';
+                document.getElementById('bloodType').textContent = orphan.BloodType || '—';
+                document.getElementById('familyName').textContent = orphan.FamilyName || orphan.FamilyID || '—';
+
+                // الوالدين
+                document.getElementById('fatherStatus').textContent = orphan.FatherStatus || '—';
+                document.getElementById('fatherDeathDate').textContent = orphan.FatherDeathDate || '—';
+                document.getElementById('fatherDeathCause').textContent = orphan.FatherDeathCause || '—';
+                document.getElementById('motherStatus').textContent = orphan.MotherStatus || '—';
+                document.getElementById('motherName').textContent = orphan.MotherName || '—';
+                document.getElementById('motherPhone').textContent = orphan.MotherPhone || '—';
+
+                // التعليم
+                document.getElementById('schoolName').textContent = orphan.SchoolName || orphan.SchoolID || '—';
+                document.getElementById('educationLevel').textContent = orphan.EducationLevel || '—';
+                document.getElementById('grade').textContent = orphan.Grade || '—';
+                document.getElementById('academicYear').textContent = orphan.AcademicYear || '—';
+
+                // التسجيل
+                document.getElementById('orphanStatus').textContent = orphan.OrphanStatus || '—';
+                document.getElementById('admissionDate').textContent = orphan.AdmissionDate || '—';
+                document.getElementById('releaseDate').textContent = orphan.ReleaseDate || '—';
+                document.getElementById('releaseReason').textContent = orphan.ReleaseReason || '—';
+
+                // الملاحظات
+                document.getElementById('notes').textContent = orphan.Notes || '—';
+            }
+
+            function showError(msg) {
+                document.getElementById('printContainer').innerHTML = `
+                    <div class="text-center py-5">
+                        <i class="fas fa-exclamation-triangle fa-3x text-danger mb-3"></i>
+                        <h5>${msg}</h5>
+                        <a href="/pages/orphans.html" class="btn btn-gold mt-3">العودة لقائمة الأيتام</a>
+                    </div>
+                `;
+            }
+
+            // تنفيذ عند تحميل الصفحة
+            document.addEventListener('DOMContentLoaded', loadOrphanData);
+
+            // عند الطباعة، نضبط بعض الأنماط الإضافية
+            window.addEventListener('beforeprint', function() {
+                // يمكن إضافة أي تحضيرات قبل الطباعة
+            });
+
+        })();
+    </script>
+
+</body>
+</html>
