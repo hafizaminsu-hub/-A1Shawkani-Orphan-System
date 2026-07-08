@@ -4,17 +4,146 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>لوحة التحكم - نظام الشوكاني</title>
-    <!-- Bootstrap 5 RTL -->
+    <!-- Bootstrap 5 RTL (للهيكل الأساسي) -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
-    <!-- Font Awesome 6 -->
+    <!-- Font Awesome 6 (لأيقونات) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-    <!-- الملفات الثابتة (مسارات مطلقة) -->
-    <link rel="stylesheet" href="/css/style.css">
-    <link rel="stylesheet" href="/css/dashboard.css">
     <style>
-        /* ===== أنماط إضافية ===== */
+        /* ================================================================
+           أنماط شاملة ومباشرة - تضمن ظهور التصميم بالكامل
+           ================================================================ */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            background: #f0f2f5;
+            direction: rtl;
+            color: #1a1a2e;
+        }
+        a { text-decoration: none; }
+        ul { list-style: none; padding: 0; margin: 0; }
+
+        /* ===== القائمة الجانبية ===== */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 260px;
+            height: 100vh;
+            background: linear-gradient(180deg, #1a1a2e, #16213e);
+            color: #fff;
+            padding: 1.5rem 0;
+            overflow-y: auto;
+            z-index: 1050;
+            box-shadow: 4px 0 30px rgba(0,0,0,0.15);
+            transform: translateX(0);
+            transition: transform 0.3s ease;
+        }
+        .sidebar-brand {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            padding: 0.5rem 1.5rem 2rem 1.5rem;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            margin-bottom: 1.5rem;
+        }
+        .sidebar-brand i { font-size: 2.2rem; color: #e94560; }
+        .sidebar-brand h3 { font-size: 1.3rem; font-weight: 700; color: #fff; margin: 0; }
+        .sidebar-brand h3 span { color: #e94560; }
+        .sidebar .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.7rem 1.8rem;
+            color: rgba(255,255,255,0.7);
+            font-weight: 500;
+            border-right: 4px solid transparent;
+            transition: all 0.3s;
+        }
+        .sidebar .nav-link:hover,
+        .sidebar .nav-link.active {
+            background: rgba(255,255,255,0.05);
+            color: #fff;
+            border-right-color: #e94560;
+        }
+        .sidebar .nav-link i { width: 1.6rem; font-size: 1.1rem; text-align: center; }
+        .sidebar .nav-group-title {
+            padding: 0.8rem 1.8rem 0.3rem 1.8rem;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.3);
+            font-weight: 600;
+        }
+
+        /* ===== المحتوى الرئيسي ===== */
+        .main-content {
+            margin-right: 260px;
+            width: calc(100% - 260px);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ===== الشريط العلوي ===== */
+        .navbar-top {
+            background: rgba(255,255,255,0.9);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(0,0,0,0.04);
+            padding: 0.5rem 2rem;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 1040;
+        }
+        .navbar-top .toggle-sidebar {
+            background: transparent;
+            border: none;
+            font-size: 1.4rem;
+            color: #1a1a2e;
+            cursor: pointer;
+        }
+        .user-info { display: flex; align-items: center; gap: 1rem; }
+        .user-avatar {
+            width: 38px; height: 38px;
+            border-radius: 50%;
+            background: #16213e;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+        .user-name { font-weight: 600; color: #1a1a2e; }
+
+        /* ===== محتوى الصفحة ===== */
+        .page-content { padding: 2rem; flex: 1; }
+
+        /* ===== بطاقة الترحيب ===== */
+        .welcome-card {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            color: #fff;
+            margin-bottom: 2rem;
+        }
+        .welcome-card h2 { font-weight: 700; font-size: 2rem; }
+        .welcome-card .deepseek-highlight {
+            background: rgba(233,69,96,0.15);
+            padding: 0.3rem 1.2rem;
+            border-radius: 3rem;
+            display: inline-block;
+            border: 1px solid rgba(233,69,96,0.2);
+            color: #ff6b8a;
+            margin-top: 0.5rem;
+        }
+
+        /* ===== بطاقات الإحصائيات ===== */
         .stat-card-modern {
             background: #fff;
             border-radius: 1.5rem;
@@ -43,6 +172,8 @@
             opacity: 0.5;
             color: #e94560;
         }
+
+        /* ===== الأزرار السريعة ===== */
         .quick-action-link {
             display: flex;
             flex-direction: column;
@@ -78,26 +209,8 @@
             font-size: 0.95rem;
             font-weight: 600;
         }
-        .welcome-card {
-            background: linear-gradient(135deg, #1a1a2e, #16213e);
-            border-radius: 1.5rem;
-            padding: 2rem;
-            color: #fff;
-            margin-bottom: 2rem;
-        }
-        .welcome-card h2 {
-            font-weight: 700;
-            font-size: 2rem;
-        }
-        .welcome-card .deepseek-highlight {
-            background: rgba(233,69,96,0.15);
-            padding: 0.3rem 1.2rem;
-            border-radius: 3rem;
-            display: inline-block;
-            border: 1px solid rgba(233,69,96,0.2);
-            color: #ff6b8a;
-            margin-top: 0.5rem;
-        }
+
+        /* ===== النشاطات ===== */
         .activity-item {
             padding: 0.75rem 0;
             border-bottom: 1px solid #f0f2f5;
@@ -107,8 +220,7 @@
         }
         .activity-item:last-child { border-bottom: none; }
         .activity-icon {
-            width: 38px;
-            height: 38px;
+            width: 38px; height: 38px;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -120,24 +232,52 @@
         .bg-primary-subtle { background: #cfe2ff; color: #0a58ca; }
         .bg-warning-subtle { background: #fff3cd; color: #856404; }
         .bg-info-subtle { background: #d1ecf1; color: #0c5460; }
+
+        /* ===== المخطط ===== */
         .chart-container { height: 280px; position: relative; }
+
+        /* ===== البطاقات العامة ===== */
+        .card {
+            background: #fff;
+            border: none;
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.06);
+            margin-bottom: 1.5rem;
+        }
+        .card-header {
+            background: transparent;
+            border-bottom: 1px solid rgba(0,0,0,0.04);
+            padding: 1.2rem 1.8rem;
+            font-weight: 600;
+            color: #1a1a2e;
+        }
+        .card-body { padding: 1.8rem; }
+
+        /* ===== تحسينات للشاشات الصغيرة ===== */
+        @media (max-width: 992px) {
+            .sidebar { transform: translateX(100%); }
+            .sidebar.show { transform: translateX(0); }
+            .main-content { margin-right: 0; width: 100%; }
+        }
         @media (max-width: 768px) {
             .stat-card-modern .stat-number { font-size: 1.6rem; }
             .quick-action-link { min-height: 100px; padding: 1rem 0.3rem; font-size: 0.85rem; }
             .quick-action-link i { font-size: 1.8rem; }
             .welcome-card h2 { font-size: 1.5rem; }
+            .navbar-top { padding: 0.5rem 1rem; }
         }
         @media (max-width: 576px) {
             .stat-card-modern .stat-number { font-size: 1.3rem; }
             .quick-action-link { min-height: 80px; padding: 0.8rem 0.2rem; font-size: 0.75rem; }
             .quick-action-link i { font-size: 1.5rem; }
             .chart-container { height: 200px; }
+            .page-content { padding: 1rem; }
         }
     </style>
 </head>
 <body>
 <div class="wrapper">
-    <!-- ===== القائمة الجانبية (Sidebar) ===== -->
+    <!-- ===== القائمة الجانبية ===== -->
     <nav class="sidebar" id="sidebar">
         <div class="sidebar-brand">
             <i class="fas fa-hands-helping"></i>
@@ -166,7 +306,7 @@
 
     <!-- ===== المحتوى الرئيسي ===== -->
     <div class="main-content">
-        <!-- الشريط العلوي (Navbar) -->
+        <!-- الشريط العلوي -->
         <nav class="navbar-top">
             <button class="toggle-sidebar" id="toggleSidebar"><i class="fas fa-bars"></i></button>
             <div class="user-info">
@@ -176,7 +316,7 @@
         </nav>
 
         <div class="page-content">
-            <!-- ===== بطاقة الترحيب ===== -->
+            <!-- بطاقة الترحيب -->
             <div class="welcome-card">
                 <div class="row align-items-center">
                     <div class="col-md-8">
@@ -197,7 +337,7 @@
                 </div>
             </div>
 
-            <!-- ===== بطاقات الإحصائيات ===== -->
+            <!-- بطاقات الإحصائيات -->
             <div class="row g-4 mb-4">
                 <div class="col-xl-3 col-lg-6 col-md-6">
                     <div class="stat-card-modern d-flex align-items-center justify-content-between">
@@ -237,7 +377,7 @@
                 </div>
             </div>
 
-            <!-- ===== الأزرار السريعة ===== -->
+            <!-- الأزرار السريعة -->
             <div class="row g-3 mb-4">
                 <div class="col-md-3 col-6">
                     <a href="/pages/orphan-form.html" class="quick-action-link">
@@ -265,7 +405,7 @@
                 </div>
             </div>
 
-            <!-- ===== المخطط البياني + النشاطات ===== -->
+            <!-- المخطط والنشاطات -->
             <div class="row g-4">
                 <div class="col-lg-8">
                     <div class="card">
@@ -280,24 +420,18 @@
                 <div class="col-lg-4">
                     <div class="card">
                         <div class="card-header"><i class="fas fa-clock me-2"></i> النشاطات الأخيرة</div>
-                        <div class="card-body" id="recentActivities">
-                            <!-- سيتم ملؤها بواسطة JavaScript -->
-                        </div>
+                        <div class="card-body" id="recentActivities"></div>
                     </div>
                 </div>
             </div>
-
-        </div><!-- end page-content -->
-    </div><!-- end main-content -->
+        </div>
+    </div>
 </div>
 
 <!-- ===== JavaScript ===== -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="/js/dashboard.js"></script>
 <script>
     (function() {
-        'use strict';
-
         // التاريخ
         const dateEl = document.getElementById('currentDate');
         if (dateEl) {
@@ -318,7 +452,7 @@
             })
             .catch(() => {});
 
-        // طي القائمة الجانبية
+        // تبديل القائمة الجانبية
         const toggleBtn = document.getElementById('toggleSidebar');
         const sidebar = document.getElementById('sidebar');
         if (toggleBtn && sidebar) {
@@ -327,7 +461,7 @@
             });
         }
 
-        // جلب الإحصائيات
+        // الإحصائيات
         fetch('/api/stats')
             .then(res => res.json())
             .then(stats => {
@@ -338,7 +472,7 @@
             })
             .catch(() => {});
 
-        // جلب بيانات المخطط
+        // المخطط
         fetch('/api/chart-data')
             .then(res => res.json())
             .then(data => {
@@ -360,19 +494,15 @@
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
-                        scales: {
-                            y: { beginAtZero: true, ticks: { stepSize: 1 } }
-                        },
-                        plugins: {
-                            legend: { display: false }
-                        },
+                        scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } },
+                        plugins: { legend: { display: false } },
                         locale: 'ar-EG'
                     }
                 });
             })
             .catch(() => {});
 
-        // جلب النشاطات
+        // النشاطات
         fetch('/api/activities')
             .then(res => res.json())
             .then(activities => {
@@ -401,7 +531,7 @@
             })
             .catch(() => {});
 
-        console.log('✅ Dashboard - النسخة المُحدّثة تعمل بنجاح');
+        console.log('✅ Dashboard يعمل مع الأنماط المضمنة');
     })();
 </script>
 </body>
