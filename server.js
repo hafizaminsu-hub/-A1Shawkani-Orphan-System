@@ -2,7 +2,7 @@
  * ============================================================
  * الملف: server.js
  * الوصف: الخادم الرئيسي لنظام الشوكاني - جميع نقاط API، المصادقة، إدارة الملفات، الجدولة
- * الإصدار: 1.0.3 (تم إعادة ترتيب الـ Routes وإصلاح نقاط API)
+ * الإصدار: 1.0.4 (تم إعادة ترتيب الكود وإصلاح خطأ upload)
  * ============================================================
  */
 
@@ -132,10 +132,168 @@ app.use(session({
 }));
 
 // ============================================================
-// 5. نقاط API (قبل الملفات الثابتة لتجنب تعارض المسارات)
+// 5. إعداد Multer (لرفع الملفات)
+// ============================================================
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        let uploadPath = path.join(UPLOADS_DIR, 'documents');
+        if (file.fieldname === 'photo') {
+            uploadPath = path.join(UPLOADS_DIR, 'photos');
+        }
+        cb(null, uploadPath);
+    },
+    filename: function (req, file, cb) {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        const ext = path.extname(file.originalname);
+        cb(null, file.fieldname + '-' + uniqueSuffix + ext);
+    }
+});
+
+const fileFilter = (req, file, cb) => {
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+    if (allowedTypes.includes(file.mimetype)) {
+        cb(null, true);
+    } else {
+        cb(new Error('نوع الملف غير مسموح به'), false);
+    }
+};
+
+const upload = multer({
+    storage: storage,
+    limits: { fileSize: 10 * 1024 * 1024 },
+    fileFilter: fileFilter
+});
+
+// ============================================================
+// 6. الدوال المساعدة
+// ============================================================
+async function auditLog(userId, actionType, tableName, recordId, oldData = null, newData = null, req = null, description = 'عملية نظام') {
+    try {
+        const ip = req ? req.ip || req.connection.remoteAddress : null;
+        const userAgent = req ? req.headers['user-agent'] : null;
+        const sql = `
+            INSERT INTO tblLogs (UserID, ActionType, TableName, RecordID, OldData, NewData, IPAddress, UserAgent, LogDate, ActionDescription)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, ?)
+        `;
+        await runQuery(sql, [
+            userId,
+            actionType,
+            tableName,
+            recordId,
+            oldData ? JSON.stringify(oldData) : null,
+            newData ? JSON.stringify(newData) : null,
+            ip,
+            userAgent,
+            description
+        ]);
+    } catch (error) {
+        console.error('❌ خطأ في تسجيل سجل العمليات:', error.message);
+    }
+}
+
+function requireAuth(req, res, next) {
+    if (!req.session.userId) {
+        return res.status(401).json({ error: 'غير مصرح به. يرجى تسجيل الدخول.' });
+    }
+    next();
+}
+
+function requireRole(roleId) {
+    return (req, res, next) => {
+        if (!req.session.userId) {
+            return res.status(401).json({ error: 'غير مصرح به.' });
+        }
+        if (req.session.roleId !== 1 && req.session.roleId !== roleId) {
+            return res.status(403).json({ error: 'ليس لديك صلاحية للقيام بهذه العملية.' });
+        }
+        next();
+    };
+}
+
+function generateUUID() {
+    return crypto.randomUUID();
+}
+
+async function createBackupFile(type = 'يدوي', userId = null) {
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    const fileName = `backup_${timestamp}.sqlite`;
+    const backupPath = path.join(BACKUPS_DIR, fileName);
+    
+    fs.copyFileSync(DB_PATH, backupPath);
+    
+    const stats = fs.statSync(backupPath);
+    const size = stats.size;
+    
+    const sql = `
+        INSERT INTO tblBackups (BackupFileName, BackupPath, BackupSize, BackupType, BackupDate, CreatedBy, Notes)
+        VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP, ?, ?)
+    `;
+    const result = await runQuery(sql, [fileName, backupPath, size, type, userId, `نسخ ${type}`]);
+    
+    const backups = await allQuery('SELECT BackupID, BackupPath FROM tblBackups ORDER BY BackupDate DESC OFFSET 30');
+    for (let old of backups) {
+        try {
+            if (fs.existsSync(old.BackupPath)) {
+                fs.unlinkSync(old.BackupPath);
+            }
+            await runQuery('DELETE FROM tblBackups WHERE BackupID = ?', [old.BackupID]);
+        } catch (err) {
+            console.error('خطأ في حذف نسخة قديمة:', err.message);
+        }
+    }
+    
+    return { BackupID: result.lastID, FileName: fileName, Path: backupPath, Size: size };
+}
+
+async function addNotification(userId, title, message, type = 'معلومة', link = null, expiryDate = null) {
+    try {
+        const sql = `
+            INSERT INTO tblNotifications (UserID, Title, Message, NotificationType, Link, ExpiryDate, CreatedAt)
+            VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+        `;
+        await runQuery(sql, [userId, title, message, type, link, expiryDate]);
+    } catch (err) {
+        console.error('خطأ في إضافة التنبيه:', err.message);
+    }
+}
+
+// ============================================================
+// 7. إنشاء المستخدم admin تلقائياً
+// ============================================================
+async function ensureAdminUser() {
+    try {
+        console.log('🔄 جارٍ التحقق من المستخدم admin...');
+        const admin = await getQuery('SELECT UserID, PasswordHash FROM tblUsers WHERE Username = ?', ['admin']);
+        
+        const newHash = bcrypt.hashSync('Admin@123', 10);
+        
+        if (!admin) {
+            console.log('⚠️ المستخدم admin غير موجود، جاري إنشائه...');
+            await runQuery(
+                `INSERT INTO tblUsers (Username, PasswordHash, FullName, Email, RoleID, IsActive, IsDeleted)
+                 VALUES (?, ?, ?, ?, ?, ?, ?)`,
+                ['admin', newHash, 'مدير النظام', 'admin@alshawkani.org', 1, 1, 0]
+            );
+            console.log('✔ تم إنشاء المستخدم admin بنجاح.');
+        } else {
+            console.log('🔑 تحديث كلمة مرور المستخدم admin...');
+            await runQuery(
+                'UPDATE tblUsers SET PasswordHash = ?, UpdatedAt = CURRENT_TIMESTAMP WHERE UserID = ?',
+                [newHash, admin.UserID]
+            );
+            console.log('✔ تم تحديث كلمة مرور المستخدم admin بنجاح.');
+        }
+    } catch (err) {
+        console.error('❌ خطأ في التأكد من وجود المستخدم admin:', err.message);
+        console.error(err);
+    }
+}
+
+// ============================================================
+// 8. نقاط API
 // ============================================================
 
-// 5.1 المصادقة والجلسات
+// 8.1 المصادقة والجلسات
 app.get('/api/session', (req, res) => {
     if (req.session.userId) {
         res.json({
@@ -197,7 +355,7 @@ app.get('/logout', (req, res) => {
     });
 });
 
-// 5.2 لوحة التحكم (الإحصائيات)
+// 8.2 لوحة التحكم (الإحصائيات)
 app.get('/api/stats', requireAuth, async (req, res) => {
     try {
         const totalOrphans = await getQuery('SELECT COUNT(*) as count FROM tblOrphans WHERE IsDeleted = 0');
@@ -265,7 +423,7 @@ app.get('/api/activities', requireAuth, async (req, res) => {
     }
 });
 
-// 5.3 إدارة الأيتام (CRUD)
+// 8.3 إدارة الأيتام (CRUD)
 app.get('/api/orphans', requireAuth, async (req, res) => {
     try {
         const { status, gender, search } = req.query;
@@ -380,7 +538,7 @@ app.delete('/api/orphans/:id', requireAuth, async (req, res) => {
     }
 });
 
-// 5.4 إدارة الأسر (CRUD)
+// 8.4 إدارة الأسر (CRUD)
 app.get('/api/families', requireAuth, async (req, res) => {
     try {
         const sql = 'SELECT * FROM tblFamilies WHERE IsDeleted = 0 ORDER BY FamilyID DESC';
@@ -470,7 +628,7 @@ app.delete('/api/families/:id', requireAuth, async (req, res) => {
     }
 });
 
-// 5.5 إدارة الكفالات (CRUD)
+// 8.5 إدارة الكفالات (CRUD)
 app.get('/api/sponsorships', requireAuth, async (req, res) => {
     try {
         const { status, sponsorId } = req.query;
@@ -563,7 +721,7 @@ app.delete('/api/sponsorships/:id', requireAuth, async (req, res) => {
     }
 });
 
-// 5.6 إدارة المساعدات (CRUD)
+// 8.6 إدارة المساعدات (CRUD)
 app.get('/api/aid', requireAuth, async (req, res) => {
     try {
         const { type, dateFrom, dateTo } = req.query;
@@ -668,7 +826,7 @@ app.get('/api/aid-types', requireAuth, async (req, res) => {
     }
 });
 
-// 5.7 إدارة الكسوة (CRUD)
+// 8.7 إدارة الكسوة (CRUD)
 app.get('/api/clothing', requireAuth, async (req, res) => {
     try {
         const { season, dateFrom, dateTo } = req.query;
@@ -763,7 +921,7 @@ app.delete('/api/clothing/:id', requireAuth, async (req, res) => {
     }
 });
 
-// 5.8 إدارة الوثائق (CRUD)
+// 8.8 إدارة الوثائق (CRUD)
 app.get('/api/documents', requireAuth, async (req, res) => {
     try {
         const { type, dateFrom, dateTo } = req.query;
@@ -920,7 +1078,7 @@ app.get('/api/documents/:id/attachment', requireAuth, async (req, res) => {
     }
 });
 
-// 5.9 التقارير
+// 8.9 التقارير
 app.get('/api/reports', requireAuth, async (req, res) => {
     try {
         const { type, dateFrom, dateTo } = req.query;
@@ -998,7 +1156,7 @@ app.get('/api/reports', requireAuth, async (req, res) => {
     }
 });
 
-// 5.10 إدارة المستخدمين (CRUD)
+// 8.10 إدارة المستخدمين (CRUD)
 app.get('/api/users', requireAuth, async (req, res) => {
     try {
         const { role, active } = req.query;
@@ -1122,7 +1280,7 @@ app.get('/api/roles', requireAuth, async (req, res) => {
     }
 });
 
-// 5.11 إعدادات النظام
+// 8.11 إعدادات النظام
 app.get('/api/settings', requireAuth, async (req, res) => {
     try {
         const rows = await allQuery('SELECT SettingKey, SettingValue FROM tblSettings WHERE IsDeleted = 0');
@@ -1156,7 +1314,7 @@ app.post('/api/settings', requireAuth, requireRole(1), async (req, res) => {
     }
 });
 
-// 5.12 النسخ الاحتياطي
+// 8.12 النسخ الاحتياطي
 app.get('/api/backups', requireAuth, async (req, res) => {
     try {
         const rows = await allQuery('SELECT * FROM tblBackups WHERE IsDeleted = 0 ORDER BY BackupDate DESC');
@@ -1251,7 +1409,7 @@ app.get('/api/backups/:id/verify', requireAuth, requireRole(1), async (req, res)
     }
 });
 
-// 5.13 سجل العمليات
+// 8.13 سجل العمليات
 app.get('/api/logs', requireAuth, async (req, res) => {
     try {
         const { action, table, user, dateFrom, dateTo, limit = 100 } = req.query;
@@ -1287,7 +1445,7 @@ app.get('/api/logs', requireAuth, async (req, res) => {
     }
 });
 
-// 5.14 التنبيهات
+// 8.14 التنبيهات
 app.get('/api/notifications', requireAuth, async (req, res) => {
     try {
         const { type, read, dateFrom, dateTo } = req.query;
@@ -1366,7 +1524,7 @@ app.delete('/api/notifications/delete-read', requireAuth, async (req, res) => {
 });
 
 // ============================================================
-// 6. الملفات الثابتة (بعد نقاط API)
+// 9. الملفات الثابتة
 // ============================================================
 app.use('/css', express.static(path.join(__dirname, 'css')));
 app.use('/js', express.static(path.join(__dirname, 'js')));
@@ -1375,7 +1533,7 @@ app.use('/pages', express.static(path.join(__dirname, 'pages')));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // ============================================================
-// 7. الصفحات (بعد الملفات الثابتة)
+// 10. الصفحات
 // ============================================================
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'pages', 'login.html'));
@@ -1389,168 +1547,7 @@ app.get('/dashboard', requireAuth, (req, res) => {
 });
 
 // ============================================================
-// 8. الدوال المساعدة
-// ============================================================
-async function auditLog(userId, actionType, tableName, recordId, oldData = null, newData = null, req = null, description = 'عملية نظام') {
-    try {
-        const ip = req ? req.ip || req.connection.remoteAddress : null;
-        const userAgent = req ? req.headers['user-agent'] : null;
-        const sql = `
-            INSERT INTO tblLogs (UserID, ActionType, TableName, RecordID, OldData, NewData, IPAddress, UserAgent, LogDate, ActionDescription)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, ?)
-        `;
-        await runQuery(sql, [
-            userId,
-            actionType,
-            tableName,
-            recordId,
-            oldData ? JSON.stringify(oldData) : null,
-            newData ? JSON.stringify(newData) : null,
-            ip,
-            userAgent,
-            description
-        ]);
-    } catch (error) {
-        console.error('❌ خطأ في تسجيل سجل العمليات:', error.message);
-    }
-}
-
-function requireAuth(req, res, next) {
-    if (!req.session.userId) {
-        return res.status(401).json({ error: 'غير مصرح به. يرجى تسجيل الدخول.' });
-    }
-    next();
-}
-
-function requireRole(roleId) {
-    return (req, res, next) => {
-        if (!req.session.userId) {
-            return res.status(401).json({ error: 'غير مصرح به.' });
-        }
-        if (req.session.roleId !== 1 && req.session.roleId !== roleId) {
-            return res.status(403).json({ error: 'ليس لديك صلاحية للقيام بهذه العملية.' });
-        }
-        next();
-    };
-}
-
-function generateUUID() {
-    return crypto.randomUUID();
-}
-
-// ============================================================
-// 9. إدارة الملفات (Multer)
-// ============================================================
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        let uploadPath = path.join(UPLOADS_DIR, 'documents');
-        if (file.fieldname === 'photo') {
-            uploadPath = path.join(UPLOADS_DIR, 'photos');
-        }
-        cb(null, uploadPath);
-    },
-    filename: function (req, file, cb) {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        const ext = path.extname(file.originalname);
-        cb(null, file.fieldname + '-' + uniqueSuffix + ext);
-    }
-});
-
-const fileFilter = (req, file, cb) => {
-    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
-    if (allowedTypes.includes(file.mimetype)) {
-        cb(null, true);
-    } else {
-        cb(new Error('نوع الملف غير مسموح به'), false);
-    }
-};
-
-const upload = multer({
-    storage: storage,
-    limits: { fileSize: 10 * 1024 * 1024 },
-    fileFilter: fileFilter
-});
-
-// ============================================================
-// 10. النسخ الاحتياطي
-// ============================================================
-async function createBackupFile(type = 'يدوي', userId = null) {
-    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-    const fileName = `backup_${timestamp}.sqlite`;
-    const backupPath = path.join(BACKUPS_DIR, fileName);
-    
-    fs.copyFileSync(DB_PATH, backupPath);
-    
-    const stats = fs.statSync(backupPath);
-    const size = stats.size;
-    
-    const sql = `
-        INSERT INTO tblBackups (BackupFileName, BackupPath, BackupSize, BackupType, BackupDate, CreatedBy, Notes)
-        VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP, ?, ?)
-    `;
-    const result = await runQuery(sql, [fileName, backupPath, size, type, userId, `نسخ ${type}`]);
-    
-    const backups = await allQuery('SELECT BackupID, BackupPath FROM tblBackups ORDER BY BackupDate DESC OFFSET 30');
-    for (let old of backups) {
-        try {
-            if (fs.existsSync(old.BackupPath)) {
-                fs.unlinkSync(old.BackupPath);
-            }
-            await runQuery('DELETE FROM tblBackups WHERE BackupID = ?', [old.BackupID]);
-        } catch (err) {
-            console.error('خطأ في حذف نسخة قديمة:', err.message);
-        }
-    }
-    
-    return { BackupID: result.lastID, FileName: fileName, Path: backupPath, Size: size };
-}
-
-async function addNotification(userId, title, message, type = 'معلومة', link = null, expiryDate = null) {
-    try {
-        const sql = `
-            INSERT INTO tblNotifications (UserID, Title, Message, NotificationType, Link, ExpiryDate, CreatedAt)
-            VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
-        `;
-        await runQuery(sql, [userId, title, message, type, link, expiryDate]);
-    } catch (err) {
-        console.error('خطأ في إضافة التنبيه:', err.message);
-    }
-}
-
-// ============================================================
-// 11. إنشاء المستخدم admin تلقائياً
-// ============================================================
-async function ensureAdminUser() {
-    try {
-        console.log('🔄 جارٍ التحقق من المستخدم admin...');
-        const admin = await getQuery('SELECT UserID, PasswordHash FROM tblUsers WHERE Username = ?', ['admin']);
-        
-        const newHash = bcrypt.hashSync('Admin@123', 10);
-        
-        if (!admin) {
-            console.log('⚠️ المستخدم admin غير موجود، جاري إنشائه...');
-            await runQuery(
-                `INSERT INTO tblUsers (Username, PasswordHash, FullName, Email, RoleID, IsActive, IsDeleted)
-                 VALUES (?, ?, ?, ?, ?, ?, ?)`,
-                ['admin', newHash, 'مدير النظام', 'admin@alshawkani.org', 1, 1, 0]
-            );
-            console.log('✔ تم إنشاء المستخدم admin بنجاح.');
-        } else {
-            console.log('🔑 تحديث كلمة مرور المستخدم admin...');
-            await runQuery(
-                'UPDATE tblUsers SET PasswordHash = ?, UpdatedAt = CURRENT_TIMESTAMP WHERE UserID = ?',
-                [newHash, admin.UserID]
-            );
-            console.log('✔ تم تحديث كلمة مرور المستخدم admin بنجاح.');
-        }
-    } catch (err) {
-        console.error('❌ خطأ في التأكد من وجود المستخدم admin:', err.message);
-        console.error(err);
-    }
-}
-
-// ============================================================
-// 12. تشغيل الخادم
+// 11. تشغيل الخادم
 // ============================================================
 async function startServer() {
     try {
