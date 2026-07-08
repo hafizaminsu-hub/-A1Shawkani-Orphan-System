@@ -3,25 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة التحكم - نظام الشوكاني</title>
-    <!-- Bootstrap 5 RTL (للهيكل الأساسي) -->
+    <title>لوحة التحكم - نظام الشوكاني (داكن)</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
-    <!-- Font Awesome 6 (لأيقونات) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <style>
         /* ================================================================
-           أنماط شاملة ومباشرة - تضمن ظهور التصميم بالكامل
+           تصميم Dark Mode شامل
            ================================================================ */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Segoe UI', Tahoma, sans-serif;
-            background: #f0f2f5;
+            background: #121212;
+            color: #e0e0e0;
             direction: rtl;
-            color: #1a1a2e;
         }
-        a { text-decoration: none; }
+        a { text-decoration: none; color: #bb86fc; }
+        a:hover { color: #bb86fc; }
         ul { list-style: none; padding: 0; margin: 0; }
 
         /* ===== القائمة الجانبية ===== */
@@ -31,12 +29,12 @@
             right: 0;
             width: 260px;
             height: 100vh;
-            background: linear-gradient(180deg, #1a1a2e, #16213e);
-            color: #fff;
+            background: linear-gradient(180deg, #1e1e1e, #2d2d2d);
+            color: #e0e0e0;
             padding: 1.5rem 0;
             overflow-y: auto;
             z-index: 1050;
-            box-shadow: 4px 0 30px rgba(0,0,0,0.15);
+            box-shadow: 4px 0 30px rgba(0,0,0,0.5);
             transform: translateX(0);
             transition: transform 0.3s ease;
         }
@@ -49,9 +47,9 @@
             border-bottom: 1px solid rgba(255,255,255,0.08);
             margin-bottom: 1.5rem;
         }
-        .sidebar-brand i { font-size: 2.2rem; color: #e94560; }
+        .sidebar-brand i { font-size: 2.2rem; color: #bb86fc; }
         .sidebar-brand h3 { font-size: 1.3rem; font-weight: 700; color: #fff; margin: 0; }
-        .sidebar-brand h3 span { color: #e94560; }
+        .sidebar-brand h3 span { color: #bb86fc; }
         .sidebar .nav-link {
             display: flex;
             align-items: center;
@@ -66,7 +64,7 @@
         .sidebar .nav-link.active {
             background: rgba(255,255,255,0.05);
             color: #fff;
-            border-right-color: #e94560;
+            border-right-color: #bb86fc;
         }
         .sidebar .nav-link i { width: 1.6rem; font-size: 1.1rem; text-align: center; }
         .sidebar .nav-group-title {
@@ -88,9 +86,9 @@
 
         /* ===== الشريط العلوي ===== */
         .navbar-top {
-            background: rgba(255,255,255,0.9);
+            background: rgba(30,30,30,0.95);
             backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(0,0,0,0.04);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
             padding: 0.5rem 2rem;
             height: 64px;
             display: flex;
@@ -104,14 +102,14 @@
             background: transparent;
             border: none;
             font-size: 1.4rem;
-            color: #1a1a2e;
+            color: #e0e0e0;
             cursor: pointer;
         }
         .user-info { display: flex; align-items: center; gap: 1rem; }
         .user-avatar {
             width: 38px; height: 38px;
             border-radius: 50%;
-            background: #16213e;
+            background: #3d3d3d;
             color: #fff;
             display: flex;
             align-items: center;
@@ -119,58 +117,60 @@
             font-weight: 700;
             font-size: 0.9rem;
         }
-        .user-name { font-weight: 600; color: #1a1a2e; }
+        .user-name { font-weight: 600; color: #e0e0e0; }
 
         /* ===== محتوى الصفحة ===== */
         .page-content { padding: 2rem; flex: 1; }
 
         /* ===== بطاقة الترحيب ===== */
         .welcome-card {
-            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            background: linear-gradient(135deg, #1e1e1e, #2d2d2d);
             border-radius: 1.5rem;
             padding: 2rem;
             color: #fff;
             margin-bottom: 2rem;
+            border: 1px solid rgba(255,255,255,0.05);
         }
         .welcome-card h2 { font-weight: 700; font-size: 2rem; }
         .welcome-card .deepseek-highlight {
-            background: rgba(233,69,96,0.15);
+            background: rgba(187,134,252,0.15);
             padding: 0.3rem 1.2rem;
             border-radius: 3rem;
             display: inline-block;
-            border: 1px solid rgba(233,69,96,0.2);
-            color: #ff6b8a;
+            border: 1px solid rgba(187,134,252,0.2);
+            color: #bb86fc;
             margin-top: 0.5rem;
         }
 
         /* ===== بطاقات الإحصائيات ===== */
         .stat-card-modern {
-            background: #fff;
+            background: #1e1e1e;
             border-radius: 1.5rem;
             padding: 1.5rem;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.06);
-            border-right: 4px solid #e94560;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+            border-right: 4px solid #bb86fc;
             height: 100%;
             transition: all 0.3s;
+            border: 1px solid rgba(255,255,255,0.05);
         }
         .stat-card-modern:hover {
             transform: translateY(-6px);
-            box-shadow: 0 20px 60px rgba(0,0,0,0.10);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.6);
         }
         .stat-card-modern .stat-number {
             font-size: 2.2rem;
             font-weight: 800;
-            color: #1a1a2e;
+            color: #ffffff;
         }
         .stat-card-modern .stat-label {
-            color: #6c757d;
+            color: #aaa;
             font-size: 0.9rem;
             font-weight: 500;
         }
         .stat-card-modern .stat-icon {
             font-size: 2.8rem;
             opacity: 0.5;
-            color: #e94560;
+            color: #bb86fc;
         }
 
         /* ===== الأزرار السريعة ===== */
@@ -182,38 +182,56 @@
             gap: 8px;
             padding: 1.5rem 0.5rem;
             border-radius: 1rem;
-            border: 2px solid #e9ecef;
-            background: #fff;
+            border: 2px solid #333;
+            background: #1a1a1a;
             transition: all 0.3s;
             text-align: center;
-            color: #212529 !important;
+            color: #e0e0e0 !important;
             font-weight: 600;
             font-size: 1rem;
             text-decoration: none !important;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
             cursor: pointer;
             width: 100%;
             min-height: 120px;
         }
         .quick-action-link:hover {
-            border-color: #e94560;
-            color: #e94560 !important;
-            background: rgba(233,69,96,0.06);
+            border-color: #bb86fc;
+            color: #bb86fc !important;
+            background: rgba(187,134,252,0.08);
             transform: translateY(-4px);
         }
         .quick-action-link i {
             font-size: 2.2rem;
-            color: #e94560;
+            color: #bb86fc;
         }
         .quick-action-link span {
             font-size: 0.95rem;
             font-weight: 600;
         }
 
+        /* ===== البطاقات العامة ===== */
+        .card {
+            background: #1e1e1e;
+            border: none;
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .card-header {
+            background: transparent;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding: 1.2rem 1.8rem;
+            font-weight: 600;
+            color: #e0e0e0;
+        }
+        .card-body { padding: 1.8rem; }
+
         /* ===== النشاطات ===== */
         .activity-item {
             padding: 0.75rem 0;
-            border-bottom: 1px solid #f0f2f5;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
             display: flex;
             align-items: center;
             gap: 1rem;
@@ -228,30 +246,13 @@
             font-size: 0.9rem;
             flex-shrink: 0;
         }
-        .bg-success-subtle { background: #d4edda; color: #155724; }
-        .bg-primary-subtle { background: #cfe2ff; color: #0a58ca; }
-        .bg-warning-subtle { background: #fff3cd; color: #856404; }
-        .bg-info-subtle { background: #d1ecf1; color: #0c5460; }
+        .bg-success-subtle { background: #1e3a2a; color: #6fcf97; }
+        .bg-primary-subtle { background: #1e2a3a; color: #6f8fcf; }
+        .bg-warning-subtle { background: #3a2e1e; color: #cfb76f; }
+        .bg-info-subtle { background: #1e2e3a; color: #6fc7cf; }
 
         /* ===== المخطط ===== */
         .chart-container { height: 280px; position: relative; }
-
-        /* ===== البطاقات العامة ===== */
-        .card {
-            background: #fff;
-            border: none;
-            border-radius: 1.5rem;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.06);
-            margin-bottom: 1.5rem;
-        }
-        .card-header {
-            background: transparent;
-            border-bottom: 1px solid rgba(0,0,0,0.04);
-            padding: 1.2rem 1.8rem;
-            font-weight: 600;
-            color: #1a1a2e;
-        }
-        .card-body { padding: 1.8rem; }
 
         /* ===== تحسينات للشاشات الصغيرة ===== */
         @media (max-width: 992px) {
@@ -321,17 +322,17 @@
                 <div class="row align-items-center">
                     <div class="col-md-8">
                         <h2>مرحباً بك في نظام الشوكاني</h2>
-                        <p style="opacity:0.8;">نظام إدارة الأيتام والرعاية الاجتماعية</p>
+                        <p style="opacity:0.7;">نظام إدارة الأيتام والرعاية الاجتماعية</p>
                         <div class="deepseek-highlight">
                             <i class="fas fa-robot me-2"></i> مرحباً ديب سيك 👋
                         </div>
                     </div>
                     <div class="col-md-4 text-md-start mt-3 mt-md-0">
-                        <span class="badge bg-light text-dark p-2 rounded-pill">
+                        <span class="badge bg-secondary text-light p-2 rounded-pill">
                             <i class="fas fa-calendar-alt me-2"></i><span id="currentDate"></span>
                         </span>
                         <div class="mt-2">
-                            <span class="badge bg-secondary p-2 rounded-pill">الإصدار 1.0.0</span>
+                            <span class="badge bg-dark text-muted p-2 rounded-pill border border-secondary">الإصدار 1.0.0</span>
                         </div>
                     </div>
                 </div>
@@ -484,8 +485,8 @@
                         datasets: [{
                             label: 'عدد الأيتام',
                             data: data.values || [0, 0, 0],
-                            backgroundColor: ['#e94560', '#f5a623', '#2ecc71'],
-                            borderColor: ['#e94560', '#f5a623', '#2ecc71'],
+                            backgroundColor: ['#bb86fc', '#f5a623', '#6fcf97'],
+                            borderColor: ['#bb86fc', '#f5a623', '#6fcf97'],
                             borderWidth: 2,
                             borderRadius: 8,
                             barPercentage: 0.6,
@@ -531,7 +532,7 @@
             })
             .catch(() => {});
 
-        console.log('✅ Dashboard يعمل مع الأنماط المضمنة');
+        console.log('✅ Dark Mode Dashboard يعمل بنجاح');
     })();
 </script>
 </body>
