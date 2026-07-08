@@ -2,7 +2,7 @@
  * ============================================================
  * الملف: server.js
  * الوصف: الخادم الرئيسي لنظام الشوكاني - جميع نقاط API، المصادقة، إدارة الملفات، الجدولة
- * الإصدار: 1.0.1 (مُعدّل لإصلاح سجل العمليات)
+ * الإصدار: 1.0.2 (تمت إضافة إنشاء تلقائي للمستخدم admin)
  * ============================================================
  */
 
@@ -1510,13 +1510,36 @@ async function addNotification(userId, title, message, type = 'معلومة', li
 }
 
 // ============================================================
-// 8. تشغيل الخادم
+// 8. إنشاء المستخدم admin تلقائياً
+// ============================================================
+async function ensureAdminUser() {
+    try {
+        const admin = await getQuery('SELECT UserID FROM tblUsers WHERE Username = ?', ['admin']);
+        if (!admin) {
+            const hash = bcrypt.hashSync('Admin@123', 10);
+            await runQuery(
+                `INSERT INTO tblUsers (Username, PasswordHash, FullName, Email, RoleID, IsActive, IsDeleted)
+                 VALUES (?, ?, ?, ?, ?, ?, ?)`,
+                ['admin', hash, 'مدير النظام', 'admin@alshawkani.org', 1, 1, 0]
+            );
+            console.log('✔ تم إنشاء المستخدم admin تلقائياً.');
+        } else {
+            console.log('✔ المستخدم admin موجود بالفعل.');
+        }
+    } catch (err) {
+        console.error('خطأ في التأكد من وجود المستخدم admin:', err.message);
+    }
+}
+
+// ============================================================
+// 9. تشغيل الخادم
 // ============================================
 
 async function startServer() {
     try {
         await openDatabase();
         await initializeDatabase();
+        await ensureAdminUser(); // <-- تمت الإضافة
 
         app.listen(PORT, '0.0.0.0', () => {
             console.log('==================================================');
