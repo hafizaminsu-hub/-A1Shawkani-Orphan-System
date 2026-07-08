@@ -1,539 +1,542 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة التحكم - نظام الشوكاني (داكن)</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-    <style>
-        /* ================================================================
-           تصميم Dark Mode شامل
-           ================================================================ */
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Segoe UI', Tahoma, sans-serif;
-            background: #121212;
-            color: #e0e0e0;
-            direction: rtl;
-        }
-        a { text-decoration: none; color: #bb86fc; }
-        a:hover { color: #bb86fc; }
-        ul { list-style: none; padding: 0; margin: 0; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>لوحة التحكم - نظام الشوكاني</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+/* ================================================================
+   تصميم Dark Mode شامل (لا يعتمد على ملفات خارجية)
+   ================================================================ */
+:root {
+--bg-dark: #121212;
+--bg-card: #1e1e1e;
+--primary-color: #bb86fc;
+--text-main: #e0e0e0;
+--text-muted: rgba(255,255,255,0.6);
+--border-color: rgba(255,255,255,0.08);
+--sidebar-width: 280px;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+background: var(--bg-dark);
+color: var(--text-main);
+direction: rtl;
+overflow-x: hidden;
+}
+a { text-decoration: none; color: var(--primary-color); transition: all 0.3s; }
+a:hover { color: #d4b3ff; }
+ul { list-style: none; padding: 0; margin: 0; }
+.wrapper { display: flex; width: 100%; min-height: 100vh; }
 
-        /* ===== القائمة الجانبية ===== */
-        .sidebar {
-            position: fixed;
-            top: 0;
-            right: 0;
-            width: 260px;
-            height: 100vh;
-            background: linear-gradient(180deg, #1e1e1e, #2d2d2d);
-            color: #e0e0e0;
-            padding: 1.5rem 0;
-            overflow-y: auto;
-            z-index: 1050;
-            box-shadow: 4px 0 30px rgba(0,0,0,0.5);
-            transform: translateX(0);
-            transition: transform 0.3s ease;
-        }
-        .sidebar-brand {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.75rem;
-            padding: 0.5rem 1.5rem 2rem 1.5rem;
-            border-bottom: 1px solid rgba(255,255,255,0.08);
-            margin-bottom: 1.5rem;
-        }
-        .sidebar-brand i { font-size: 2.2rem; color: #bb86fc; }
-        .sidebar-brand h3 { font-size: 1.3rem; font-weight: 700; color: #fff; margin: 0; }
-        .sidebar-brand h3 span { color: #bb86fc; }
-        .sidebar .nav-link {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 0.7rem 1.8rem;
-            color: rgba(255,255,255,0.7);
-            font-weight: 500;
-            border-right: 4px solid transparent;
-            transition: all 0.3s;
-        }
-        .sidebar .nav-link:hover,
-        .sidebar .nav-link.active {
-            background: rgba(255,255,255,0.05);
-            color: #fff;
-            border-right-color: #bb86fc;
-        }
-        .sidebar .nav-link i { width: 1.6rem; font-size: 1.1rem; text-align: center; }
-        .sidebar .nav-group-title {
-            padding: 0.8rem 1.8rem 0.3rem 1.8rem;
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            color: rgba(255,255,255,0.3);
-            font-weight: 600;
-        }
+/* الخلفية المعتمة للجوال */
+.sidebar-overlay {
+position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+background: rgba(0,0,0,0.6); backdrop-filter: blur(3px); z-index: 1045;
+opacity: 0; visibility: hidden; transition: all 0.3s ease;
+}
+.sidebar-overlay.show { opacity: 1; visibility: visible; }
 
-        /* ===== المحتوى الرئيسي ===== */
-        .main-content {
-            margin-right: 260px;
-            width: calc(100% - 260px);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
+/* القائمة الجانبية */
+.sidebar {
+position: fixed; top: 0; right: 0; width: var(--sidebar-width); height: 100vh;
+background: linear-gradient(180deg, var(--bg-card), #151515);
+padding: 1.5rem 0; overflow-y: auto; z-index: 1050;
+box-shadow: -4px 0 30px rgba(0,0,0,0.6);
+transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+.sidebar::-webkit-scrollbar { width: 6px; }
+.sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
+.sidebar::-webkit-scrollbar-thumb:hover { background: var(--primary-color); }
 
-        /* ===== الشريط العلوي ===== */
-        .navbar-top {
-            background: rgba(30,30,30,0.95);
-            backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            padding: 0.5rem 2rem;
-            height: 64px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            position: sticky;
-            top: 0;
-            z-index: 1040;
-        }
-        .navbar-top .toggle-sidebar {
-            background: transparent;
-            border: none;
-            font-size: 1.4rem;
-            color: #e0e0e0;
-            cursor: pointer;
-        }
-        .user-info { display: flex; align-items: center; gap: 1rem; }
-        .user-avatar {
-            width: 38px; height: 38px;
-            border-radius: 50%;
-            background: #3d3d3d;
-            color: #fff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 0.9rem;
-        }
-        .user-name { font-weight: 600; color: #e0e0e0; }
+.sidebar-brand {
+display: flex; align-items: center; justify-content: center; gap: 0.75rem;
+padding: 0.5rem 1.5rem 2rem 1.5rem;
+border-bottom: 1px solid var(--border-color); margin-bottom: 1rem;
+}
+.sidebar-brand i { font-size: 2.4rem; color: var(--primary-color); }
+.sidebar-brand h3 { font-size: 1.4rem; font-weight: 800; color: #fff; margin: 0; }
+.sidebar-brand h3 span { color: var(--primary-color); }
 
-        /* ===== محتوى الصفحة ===== */
-        .page-content { padding: 2rem; flex: 1; }
+.sidebar .nav-link {
+display: flex; align-items: center; gap: 1rem;
+padding: 0.8rem 2rem; color: var(--text-muted); font-weight: 500;
+border-right: 4px solid transparent; transition: all 0.3s; margin-bottom: 0.2rem;
+}
+.sidebar .nav-link:hover, .sidebar .nav-link.active {
+background: rgba(187,134,252,0.08); color: #fff; border-right-color: var(--primary-color);
+}
+.sidebar .nav-link i { width: 1.8rem; font-size: 1.2rem; text-align: center; }
+.sidebar .nav-group-title {
+padding: 1.2rem 2rem 0.5rem 2rem; font-size: 0.75rem;
+text-transform: uppercase; color: rgba(255,255,255,0.3); font-weight: 700;
+}
 
-        /* ===== بطاقة الترحيب ===== */
-        .welcome-card {
-            background: linear-gradient(135deg, #1e1e1e, #2d2d2d);
-            border-radius: 1.5rem;
-            padding: 2rem;
-            color: #fff;
-            margin-bottom: 2rem;
-            border: 1px solid rgba(255,255,255,0.05);
-        }
-        .welcome-card h2 { font-weight: 700; font-size: 2rem; }
-        .welcome-card .deepseek-highlight {
-            background: rgba(187,134,252,0.15);
-            padding: 0.3rem 1.2rem;
-            border-radius: 3rem;
-            display: inline-block;
-            border: 1px solid rgba(187,134,252,0.2);
-            color: #bb86fc;
-            margin-top: 0.5rem;
-        }
+/* المحتوى الرئيسي */
+.main-content {
+margin-right: var(--sidebar-width); flex-grow: 1; min-height: 100vh;
+display: flex; flex-direction: column;
+transition: margin-right 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+width: calc(100% - var(--sidebar-width));
+}
 
-        /* ===== بطاقات الإحصائيات ===== */
-        .stat-card-modern {
-            background: #1e1e1e;
-            border-radius: 1.5rem;
-            padding: 1.5rem;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
-            border-right: 4px solid #bb86fc;
-            height: 100%;
-            transition: all 0.3s;
-            border: 1px solid rgba(255,255,255,0.05);
-        }
-        .stat-card-modern:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 20px 60px rgba(0,0,0,0.6);
-        }
-        .stat-card-modern .stat-number {
-            font-size: 2.2rem;
-            font-weight: 800;
-            color: #ffffff;
-        }
-        .stat-card-modern .stat-label {
-            color: #aaa;
-            font-size: 0.9rem;
-            font-weight: 500;
-        }
-        .stat-card-modern .stat-icon {
-            font-size: 2.8rem;
-            opacity: 0.5;
-            color: #bb86fc;
-        }
+/* الشريط العلوي */
+.navbar-top {
+background: rgba(30,30,30,0.85); backdrop-filter: blur(16px);
+border-bottom: 1px solid var(--border-color);
+padding: 0.8rem 2.5rem; height: 72px;
+display: flex; align-items: center; justify-content: space-between;
+position: sticky; top: 0; z-index: 1040;
+box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+}
+.navbar-top .toggle-sidebar {
+background: rgba(255,255,255,0.05); border: 1px solid var(--border-color);
+border-radius: 8px; width: 40px; height: 40px;
+display: flex; align-items: center; justify-content: center;
+font-size: 1.2rem; color: var(--text-main); cursor: pointer;
+transition: all 0.3s;
+}
+.navbar-top .toggle-sidebar:hover { background: var(--primary-color); color: #fff; border-color: var(--primary-color); }
+.header-actions { display: flex; align-items: center; gap: 1.5rem; }
+.user-info { display: flex; align-items: center; gap: 1rem; cursor: pointer; padding: 0.3rem 0.5rem; border-radius: 8px; transition: background 0.3s;}
+.user-info:hover { background: rgba(255,255,255,0.05); }
+.user-avatar {
+width: 42px; height: 42px; border-radius: 50%;
+background: linear-gradient(135deg, var(--primary-color), #7b1fa2);
+color: #fff; display: flex; align-items: center; justify-content: center;
+font-weight: 700; font-size: 1.1rem;
+box-shadow: 0 4px 10px rgba(187,134,252,0.3);
+}
+.user-name-wrapper { display: flex; flex-direction: column; }
+.user-name { font-weight: 600; color: #fff; font-size: 0.95rem; }
+.user-role { font-size: 0.75rem; color: var(--text-muted); }
 
-        /* ===== الأزرار السريعة ===== */
-        .quick-action-link {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            padding: 1.5rem 0.5rem;
-            border-radius: 1rem;
-            border: 2px solid #333;
-            background: #1a1a1a;
-            transition: all 0.3s;
-            text-align: center;
-            color: #e0e0e0 !important;
-            font-weight: 600;
-            font-size: 1rem;
-            text-decoration: none !important;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-            cursor: pointer;
-            width: 100%;
-            min-height: 120px;
-        }
-        .quick-action-link:hover {
-            border-color: #bb86fc;
-            color: #bb86fc !important;
-            background: rgba(187,134,252,0.08);
-            transform: translateY(-4px);
-        }
-        .quick-action-link i {
-            font-size: 2.2rem;
-            color: #bb86fc;
-        }
-        .quick-action-link span {
-            font-size: 0.95rem;
-            font-weight: 600;
-        }
+.page-content { padding: 2.5rem; flex: 1; }
 
-        /* ===== البطاقات العامة ===== */
-        .card {
-            background: #1e1e1e;
-            border: none;
-            border-radius: 1.5rem;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
-            margin-bottom: 1.5rem;
-            border: 1px solid rgba(255,255,255,0.05);
-        }
-        .card-header {
-            background: transparent;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            padding: 1.2rem 1.8rem;
-            font-weight: 600;
-            color: #e0e0e0;
-        }
-        .card-body { padding: 1.8rem; }
+/* بطاقة الترحيب */
+.welcome-card {
+background: linear-gradient(135deg, rgba(30,30,30,0.9), rgba(45,45,45,0.9));
+border-radius: 1.5rem; padding: 2.5rem; color: #fff; margin-bottom: 2.5rem;
+border: 1px solid var(--border-color);
+box-shadow: 0 15px 35px rgba(0,0,0,0.3); position: relative; overflow: hidden;
+}
+.welcome-card::before {
+content: ''; position: absolute; top: -50%; right: -20%;
+width: 300px; height: 300px;
+background: radial-gradient(circle, rgba(187,134,252,0.15) 0%, transparent 70%);
+border-radius: 50%; pointer-events: none;
+}
+.welcome-card h2 { font-weight: 800; font-size: 2.2rem; margin-bottom: 0.5rem; }
+.welcome-card .deepseek-highlight {
+background: rgba(187,134,252,0.15); padding: 0.4rem 1.5rem;
+border-radius: 3rem; display: inline-flex; align-items: center;
+border: 1px solid rgba(187,134,252,0.3); color: #e2caff;
+margin-top: 1rem; font-weight: 600; backdrop-filter: blur(4px);
+}
 
-        /* ===== النشاطات ===== */
-        .activity-item {
-            padding: 0.75rem 0;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-        .activity-item:last-child { border-bottom: none; }
-        .activity-icon {
-            width: 38px; height: 38px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.9rem;
-            flex-shrink: 0;
-        }
-        .bg-success-subtle { background: #1e3a2a; color: #6fcf97; }
-        .bg-primary-subtle { background: #1e2a3a; color: #6f8fcf; }
-        .bg-warning-subtle { background: #3a2e1e; color: #cfb76f; }
-        .bg-info-subtle { background: #1e2e3a; color: #6fc7cf; }
+/* بطاقات الإحصائيات */
+.stat-card-modern {
+background: var(--bg-card); border-radius: 1.5rem; padding: 1.8rem;
+box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+border-bottom: 4px solid var(--primary-color); height: 100%;
+transition: transform 0.3s, box-shadow 0.3s;
+border: 1px solid var(--border-color); border-bottom-width: 4px;
+position: relative; overflow: hidden;
+}
+.stat-card-modern:hover { transform: translateY(-8px); box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
+.stat-card-modern .stat-number { font-size: 2.5rem; font-weight: 800; color: #fff; margin-bottom: 0.2rem; line-height: 1; }
+.stat-card-modern .stat-label { color: var(--text-muted); font-size: 0.95rem; font-weight: 600; }
+.stat-card-modern .stat-icon { font-size: 3.5rem; opacity: 0.15; color: #fff; position: absolute; left: -10px; bottom: -10px; transform: rotate(-15deg); }
+.stat-orphans { border-bottom-color: #bb86fc; }
+.stat-orphans .stat-icon { color: #bb86fc; }
+.stat-sponsors { border-bottom-color: #03dac6; }
+.stat-sponsors .stat-icon { color: #03dac6; }
+.stat-families { border-bottom-color: #cf6679; }
+.stat-families .stat-icon { color: #cf6679; }
+.stat-aid { border-bottom-color: #f6a5c0; }
+.stat-aid .stat-icon { color: #f6a5c0; }
 
-        /* ===== المخطط ===== */
-        .chart-container { height: 280px; position: relative; }
+/* الأزرار السريعة */
+.quick-actions-wrapper {
+background: rgba(255,255,255,0.02); border-radius: 1.5rem;
+padding: 1.5rem; border: 1px dashed var(--border-color); margin-bottom: 2.5rem;
+}
+.quick-actions-title {
+font-size: 1.1rem; font-weight: 700; margin-bottom: 1.2rem;
+color: var(--text-main); display: flex; align-items: center; gap: 0.5rem;
+}
+.quick-action-link {
+display: flex; flex-direction: column; align-items: center; justify-content: center;
+gap: 12px; padding: 1.5rem 0.5rem; border-radius: 1rem;
+background: var(--bg-card); transition: all 0.3s; text-align: center;
+color: var(--text-main) !important; font-weight: 600; font-size: 1rem;
+border: 1px solid var(--border-color);
+box-shadow: 0 4px 15px rgba(0,0,0,0.15); width: 100%; height: 100%;
+position: relative; overflow: hidden; z-index: 1;
+}
+.quick-action-link::before {
+content: ''; position: absolute; top: 0; right: 0; bottom: 0; left: 0;
+background: var(--primary-color); z-index: -1; transform: scaleY(0);
+transform-origin: bottom; transition: transform 0.3s ease-in-out; opacity: 0.1;
+}
+.quick-action-link:hover { border-color: var(--primary-color); color: #fff !important; transform: translateY(-5px); box-shadow: 0 10px 25px rgba(187,134,252,0.2); }
+.quick-action-link:hover::before { transform: scaleY(1); }
+.quick-action-link i { font-size: 2.4rem; color: var(--primary-color); transition: color 0.3s; }
+.quick-action-link:hover i { color: #d4b3ff; }
 
-        /* ===== تحسينات للشاشات الصغيرة ===== */
-        @media (max-width: 992px) {
-            .sidebar { transform: translateX(100%); }
-            .sidebar.show { transform: translateX(0); }
-            .main-content { margin-right: 0; width: 100%; }
-        }
-        @media (max-width: 768px) {
-            .stat-card-modern .stat-number { font-size: 1.6rem; }
-            .quick-action-link { min-height: 100px; padding: 1rem 0.3rem; font-size: 0.85rem; }
-            .quick-action-link i { font-size: 1.8rem; }
-            .welcome-card h2 { font-size: 1.5rem; }
-            .navbar-top { padding: 0.5rem 1rem; }
-        }
-        @media (max-width: 576px) {
-            .stat-card-modern .stat-number { font-size: 1.3rem; }
-            .quick-action-link { min-height: 80px; padding: 0.8rem 0.2rem; font-size: 0.75rem; }
-            .quick-action-link i { font-size: 1.5rem; }
-            .chart-container { height: 200px; }
-            .page-content { padding: 1rem; }
-        }
-    </style>
+.card {
+background: var(--bg-card); border: 1px solid var(--border-color);
+border-radius: 1.5rem; box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+margin-bottom: 1.5rem; height: 100%;
+}
+.card-header {
+background: transparent; border-bottom: 1px solid var(--border-color);
+padding: 1.2rem 1.8rem; font-weight: 700; font-size: 1.1rem;
+color: #fff; display: flex; justify-content: space-between; align-items: center;
+}
+.card-body { padding: 1.8rem; }
+
+/* الجداول */
+.table-dark-custom {
+width: 100%; color: var(--text-main); border-collapse: separate; border-spacing: 0 8px;
+}
+.table-dark-custom th { color: var(--text-muted); font-weight: 600; padding: 0 1rem 0.5rem 1rem; border: none; font-size: 0.9rem; }
+.table-dark-custom td {
+background: rgba(255,255,255,0.03); padding: 1rem; vertical-align: middle;
+border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color);
+}
+.table-dark-custom td:first-child { border-right: 1px solid var(--border-color); border-top-right-radius: 8px; border-bottom-right-radius: 8px; }
+.table-dark-custom td:last-child { border-left: 1px solid var(--border-color); border-top-left-radius: 8px; border-bottom-left-radius: 8px; }
+.table-dark-custom tr:hover td { background: rgba(187,134,252,0.05); }
+
+/* النشاطات */
+.activity-feed { position: relative; padding-right: 1.5rem; }
+.activity-feed::before {
+content: ''; position: absolute; top: 0; right: 0; bottom: 0; width: 2px; background: var(--border-color);
+}
+.activity-item { position: relative; padding-bottom: 1.5rem; padding-right: 1.5rem; }
+.activity-item:last-child { padding-bottom: 0; }
+.activity-icon {
+position: absolute; right: -2.35rem; top: 0;
+width: 34px; height: 34px; border-radius: 50%;
+display: flex; align-items: center; justify-content: center; font-size: 0.85rem;
+background: var(--bg-card); border: 2px solid var(--primary-color);
+color: var(--primary-color); z-index: 2;
+}
+.activity-content {
+background: rgba(255,255,255,0.02); padding: 1rem; border-radius: 12px;
+border: 1px solid rgba(255,255,255,0.05);
+}
+
+.chart-container { height: 320px; position: relative; width: 100%; }
+
+@media (max-width: 991.98px) {
+.sidebar { transform: translateX(100%); }
+.sidebar.show { transform: translateX(0); }
+.main-content { margin-right: 0; width: 100%; }
+.navbar-top { padding: 0.8rem 1.5rem; }
+.page-content { padding: 1.5rem; }
+.welcome-card { padding: 1.8rem; text-align: center; }
+.text-md-end { text-align: center !important; margin-top: 1.5rem; }
+}
+@media (max-width: 767.98px) {
+.stat-card-modern { padding: 1.2rem; }
+.stat-card-modern .stat-number { font-size: 1.6rem; }
+.stat-card-modern .stat-icon { font-size: 2.8rem; }
+.quick-action-link { padding: 1.2rem 0.5rem; font-size: 0.85rem; }
+.welcome-card h2 { font-size: 1.5rem; }
+.chart-container { height: 250px; }
+}
+@media (max-width: 575.98px) {
+.navbar-top { padding: 0.6rem 1rem; }
+.page-content { padding: 1rem; }
+.user-name-wrapper { display: none; }
+}
+</style>
 </head>
 <body>
 <div class="wrapper">
-    <!-- ===== القائمة الجانبية ===== -->
-    <nav class="sidebar" id="sidebar">
-        <div class="sidebar-brand">
-            <i class="fas fa-hands-helping"></i>
-            <h3>نظام <span>الشوكاني</span></h3>
-        </div>
-        <ul class="nav flex-column">
-            <li class="nav-item"><a class="nav-link active" href="/dashboard"><i class="fas fa-chart-pie"></i> لوحة التحكم</a></li>
-            <li class="nav-group-title">إدارة البيانات</li>
-            <li class="nav-item"><a class="nav-link" href="/pages/orphans.html"><i class="fas fa-child"></i> الأيتام</a></li>
-            <li class="nav-item"><a class="nav-link" href="/pages/families.html"><i class="fas fa-users"></i> الأسر</a></li>
-            <li class="nav-item"><a class="nav-link" href="/pages/sponsorships.html"><i class="fas fa-hand-holding-heart"></i> الكفالات</a></li>
-            <li class="nav-item"><a class="nav-link" href="/pages/aid.html"><i class="fas fa-gift"></i> المساعدات</a></li>
-            <li class="nav-item"><a class="nav-link" href="/pages/clothing.html"><i class="fas fa-tshirt"></i> الكسوة</a></li>
-            <li class="nav-item"><a class="nav-link" href="/pages/documents.html"><i class="fas fa-file-alt"></i> الوثائق</a></li>
-            <li class="nav-group-title">التقارير والإعدادات</li>
-            <li class="nav-item"><a class="nav-link" href="/pages/reports.html"><i class="fas fa-file-alt"></i> التقارير</a></li>
-            <li class="nav-item"><a class="nav-link" href="/pages/users.html"><i class="fas fa-users-cog"></i> المستخدمون</a></li>
-            <li class="nav-item"><a class="nav-link" href="/pages/settings.html"><i class="fas fa-cog"></i> الإعدادات</a></li>
-            <li class="nav-item"><a class="nav-link" href="/pages/backups.html"><i class="fas fa-database"></i> النسخ الاحتياطي</a></li>
-            <li class="nav-item"><a class="nav-link" href="/pages/logs.html"><i class="fas fa-history"></i> سجل العمليات</a></li>
-            <li class="nav-item"><a class="nav-link" href="/pages/notifications.html"><i class="fas fa-bell"></i> التنبيهات</a></li>
-            <li class="nav-group-title">الحساب</li>
-            <li class="nav-item"><a class="nav-link" href="/logout"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</a></li>
-        </ul>
-    </nav>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-    <!-- ===== المحتوى الرئيسي ===== -->
-    <div class="main-content">
-        <!-- الشريط العلوي -->
-        <nav class="navbar-top">
-            <button class="toggle-sidebar" id="toggleSidebar"><i class="fas fa-bars"></i></button>
-            <div class="user-info">
-                <span class="user-name" id="userName">مدير النظام</span>
-                <div class="user-avatar" id="userAvatar">م</div>
-            </div>
-        </nav>
+<!-- ===== القائمة الجانبية (بدون روابط غير موجودة) ===== -->
+<nav class="sidebar" id="sidebar">
+<div class="sidebar-brand">
+<i class="fas fa-hands-helping"></i>
+<h3>نظام <span>الشوكاني</span></h3>
+</div>
+<ul class="nav flex-column">
+<li class="nav-item"><a class="nav-link active" href="/dashboard"><i class="fas fa-chart-pie"></i> لوحة التحكم</a></li>
+<li class="nav-group-title">إدارة البيانات</li>
+<li class="nav-item"><a class="nav-link" href="/pages/orphans.html"><i class="fas fa-child"></i> سجل الأيتام</a></li>
+<li class="nav-item"><a class="nav-link" href="/pages/families.html"><i class="fas fa-users"></i> بيانات الأسر</a></li>
+<li class="nav-item"><a class="nav-link" href="/pages/sponsorships.html"><i class="fas fa-hand-holding-heart"></i> إدارة الكفالات</a></li>
+<li class="nav-item"><a class="nav-link" href="/pages/aid.html"><i class="fas fa-box-open"></i> المساعدات العينية</a></li>
+<li class="nav-item"><a class="nav-link" href="/pages/clothing.html"><i class="fas fa-tshirt"></i> مشروع الكسوة</a></li>
+<!-- تم إزالة الروابط غير الموجودة (health, education) -->
+<li class="nav-item"><a class="nav-link" href="/pages/documents.html"><i class="fas fa-file-archive"></i> الأرشيف والوثائق</a></li>
+<li class="nav-group-title">التقارير والإعدادات</li>
+<li class="nav-item"><a class="nav-link" href="/pages/reports.html"><i class="fas fa-chart-line"></i> التقارير الشاملة</a></li>
+<li class="nav-item"><a class="nav-link" href="/pages/users.html"><i class="fas fa-user-shield"></i> صلاحيات المستخدمين</a></li>
+<li class="nav-item"><a class="nav-link" href="/pages/settings.html"><i class="fas fa-cogs"></i> إعدادات النظام</a></li>
+<li class="nav-item"><a class="nav-link" href="/logout"><i class="fas fa-sign-out-alt text-danger"></i> تسجيل الخروج</a></li>
+</ul>
+</nav>
 
-        <div class="page-content">
-            <!-- بطاقة الترحيب -->
-            <div class="welcome-card">
-                <div class="row align-items-center">
-                    <div class="col-md-8">
-                        <h2>مرحباً بك في نظام الشوكاني</h2>
-                        <p style="opacity:0.7;">نظام إدارة الأيتام والرعاية الاجتماعية</p>
-                        <div class="deepseek-highlight">
-                            <i class="fas fa-robot me-2"></i> مرحباً ديب سيك 👋
-                        </div>
-                    </div>
-                    <div class="col-md-4 text-md-start mt-3 mt-md-0">
-                        <span class="badge bg-secondary text-light p-2 rounded-pill">
-                            <i class="fas fa-calendar-alt me-2"></i><span id="currentDate"></span>
-                        </span>
-                        <div class="mt-2">
-                            <span class="badge bg-dark text-muted p-2 rounded-pill border border-secondary">الإصدار 1.0.0</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
+<!-- ===== المحتوى الرئيسي ===== -->
+<div class="main-content" id="mainContent">
+<nav class="navbar-top">
+<button class="toggle-sidebar" id="toggleSidebar"><i class="fas fa-bars"></i></button>
+<div class="header-actions">
+<div class="user-info">
+<div class="user-avatar" id="userAvatar">م</div>
+<div class="user-name-wrapper">
+<span class="user-name" id="userName">مدير النظام</span>
+<span class="user-role">صلاحيات كاملة</span>
+</div>
+</div>
+</div>
+</nav>
 
-            <!-- بطاقات الإحصائيات -->
-            <div class="row g-4 mb-4">
-                <div class="col-xl-3 col-lg-6 col-md-6">
-                    <div class="stat-card-modern d-flex align-items-center justify-content-between">
-                        <div>
-                            <div class="stat-number" id="totalOrphans">0</div>
-                            <div class="stat-label">إجمالي الأيتام</div>
-                        </div>
-                        <i class="fas fa-child stat-icon"></i>
-                    </div>
-                </div>
-                <div class="col-xl-3 col-lg-6 col-md-6">
-                    <div class="stat-card-modern d-flex align-items-center justify-content-between">
-                        <div>
-                            <div class="stat-number" id="activeSponsorships">0</div>
-                            <div class="stat-label">كفالات نشطة</div>
-                        </div>
-                        <i class="fas fa-hand-holding-heart stat-icon"></i>
-                    </div>
-                </div>
-                <div class="col-xl-3 col-lg-6 col-md-6">
-                    <div class="stat-card-modern d-flex align-items-center justify-content-between">
-                        <div>
-                            <div class="stat-number" id="totalFamilies">0</div>
-                            <div class="stat-label">إجمالي الأسر</div>
-                        </div>
-                        <i class="fas fa-users stat-icon"></i>
-                    </div>
-                </div>
-                <div class="col-xl-3 col-lg-6 col-md-6">
-                    <div class="stat-card-modern d-flex align-items-center justify-content-between">
-                        <div>
-                            <div class="stat-number" id="totalAid">0</div>
-                            <div class="stat-label">إجمالي المساعدات</div>
-                        </div>
-                        <i class="fas fa-gift stat-icon"></i>
-                    </div>
-                </div>
-            </div>
-
-            <!-- الأزرار السريعة -->
-            <div class="row g-3 mb-4">
-                <div class="col-md-3 col-6">
-                    <a href="/pages/orphan-form.html" class="quick-action-link">
-                        <i class="fas fa-user-plus"></i>
-                        <span>إضافة يتيم</span>
-                    </a>
-                </div>
-                <div class="col-md-3 col-6">
-                    <a href="/pages/families.html" class="quick-action-link">
-                        <i class="fas fa-users"></i>
-                        <span>إضافة أسرة</span>
-                    </a>
-                </div>
-                <div class="col-md-3 col-6">
-                    <a href="/pages/sponsorships.html" class="quick-action-link">
-                        <i class="fas fa-hand-holding-heart"></i>
-                        <span>كفالة جديدة</span>
-                    </a>
-                </div>
-                <div class="col-md-3 col-6">
-                    <a href="/pages/aid.html" class="quick-action-link">
-                        <i class="fas fa-gift"></i>
-                        <span>مساعدة جديدة</span>
-                    </a>
-                </div>
-            </div>
-
-            <!-- المخطط والنشاطات -->
-            <div class="row g-4">
-                <div class="col-lg-8">
-                    <div class="card">
-                        <div class="card-header"><i class="fas fa-chart-bar me-2"></i> توزيع الأيتام حسب الحالة</div>
-                        <div class="card-body">
-                            <div class="chart-container">
-                                <canvas id="orphansChart"></canvas>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4">
-                    <div class="card">
-                        <div class="card-header"><i class="fas fa-clock me-2"></i> النشاطات الأخيرة</div>
-                        <div class="card-body" id="recentActivities"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+<div class="page-content">
+<!-- الترحيب -->
+<div class="welcome-card">
+<div class="row align-items-center">
+<div class="col-lg-8 text-center text-lg-start">
+<h2>مرحباً بك في نظام الشوكاني</h2>
+<p style="opacity:0.8; font-size:1.1rem;">المنصة المتكاملة لإدارة الأيتام والرعاية الاجتماعية</p>
+<div class="deepseek-highlight"><i class="fas fa-robot me-2"></i> لوحة القيادة الذكية تعمل بكفاءة 👋</div>
+</div>
+<div class="col-lg-4 text-center text-lg-end mt-4 mt-lg-0">
+<div class="d-inline-flex flex-column gap-2 align-items-center align-items-lg-end">
+<span class="badge bg-dark text-light p-2 px-3 rounded-pill border border-secondary fs-6 shadow-sm">
+<i class="fas fa-calendar-alt me-2 text-primary"></i><span id="currentDate"></span>
+</span>
+<span class="badge bg-secondary bg-opacity-25 text-light p-2 px-3 rounded-pill border border-secondary">
+<i class="fas fa-code-branch me-2"></i>الإصدار 1.0.0
+</span>
+</div>
+</div>
+</div>
 </div>
 
-<!-- ===== JavaScript ===== -->
+<!-- الإجراءات السريعة -->
+<div class="quick-actions-wrapper">
+<div class="quick-actions-title"><i class="fas fa-bolt text-warning"></i> الإجراءات السريعة</div>
+<div class="row g-3">
+<div class="col-xl-2 col-lg-3 col-md-4 col-6"><a href="/pages/orphan-form.html" class="quick-action-link"><i class="fas fa-user-plus"></i><span>تسجيل يتيم</span></a></div>
+<div class="col-xl-2 col-lg-3 col-md-4 col-6"><a href="/pages/families.html" class="quick-action-link"><i class="fas fa-house-user"></i><span>إضافة أسرة</span></a></div>
+<div class="col-xl-2 col-lg-3 col-md-4 col-6"><a href="/pages/sponsorships.html" class="quick-action-link"><i class="fas fa-handshake"></i><span>كفالة جديدة</span></a></div>
+<div class="col-xl-2 col-lg-3 col-md-4 col-6"><a href="/pages/aid.html" class="quick-action-link"><i class="fas fa-box"></i><span>صرف مساعدة</span></a></div>
+<div class="col-xl-2 col-lg-3 col-md-4 col-6"><a href="/pages/clothing.html" class="quick-action-link"><i class="fas fa-tshirt"></i><span>توزيع كسوة</span></a></div>
+<div class="col-xl-2 col-lg-3 col-md-4 col-6"><a href="/pages/reports.html" class="quick-action-link"><i class="fas fa-print"></i><span>طباعة تقرير</span></a></div>
+</div>
+</div>
+
+<!-- الإحصائيات الحقيقية -->
+<div class="row g-4 mb-4">
+<div class="col-xl-3 col-lg-6 col-md-6"><div class="stat-card-modern stat-orphans"><div class="stat-number" id="totalOrphans">0</div><div class="stat-label">إجمالي الأيتام</div><i class="fas fa-child stat-icon"></i></div></div>
+<div class="col-xl-3 col-lg-6 col-md-6"><div class="stat-card-modern stat-sponsors"><div class="stat-number" id="activeSponsorships">0</div><div class="stat-label">الكفالات النشطة</div><i class="fas fa-hand-holding-heart stat-icon"></i></div></div>
+<div class="col-xl-3 col-lg-6 col-md-6"><div class="stat-card-modern stat-families"><div class="stat-number" id="totalFamilies">0</div><div class="stat-label">إجمالي الأسر</div><i class="fas fa-users stat-icon"></i></div></div>
+<div class="col-xl-3 col-lg-6 col-md-6"><div class="stat-card-modern stat-aid"><div class="stat-number" id="totalAid">0</div><div class="stat-label">إجمالي المساعدات</div><i class="fas fa-gift stat-icon"></i></div></div>
+</div>
+
+<!-- المخطط والجداول والنشاطات -->
+<div class="row g-4">
+<div class="col-xl-8 col-lg-12">
+<div class="card">
+<div class="card-header"><div><i class="fas fa-chart-area me-2 text-primary"></i> توزيع الأيتام حسب الحالة</div></div>
+<div class="card-body"><div class="chart-container"><canvas id="orphansChart"></canvas></div></div>
+</div>
+
+<!-- أحدث التسجيلات (بيانات حقيقية) -->
+<div class="card">
+<div class="card-header"><div><i class="fas fa-list me-2 text-primary"></i> أحدث التسجيلات</div></div>
+<div class="card-body p-0">
+<div class="table-responsive">
+<table class="table table-dark-custom mb-0">
+<thead><tr><th>الاسم</th><th>تاريخ التسجيل</th><th>الحالة</th></tr></thead>
+<tbody id="latestOrphansBody">
+<tr><td colspan="3" class="text-center text-muted py-3">جاري التحميل...</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+
+<!-- النشاطات والأهداف -->
+<div class="col-xl-4 col-lg-12">
+<div class="card">
+<div class="card-header"><i class="fas fa-history me-2 text-primary"></i> سجل النشاطات</div>
+<div class="card-body">
+<div class="activity-feed" id="recentActivities">
+<div class="text-center text-muted py-3">جاري التحميل...</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- ===== JavaScript (كل شيء معتمد على API الحقيقية) ===== -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    (function() {
-        // التاريخ
-        const dateEl = document.getElementById('currentDate');
-        if (dateEl) {
-            const now = new Date();
-            dateEl.textContent = now.toLocaleDateString('ar-EG', {
-                year: 'numeric', month: 'long', day: 'numeric', weekday: 'long'
-            });
+document.addEventListener('DOMContentLoaded', function() {
+
+    // ===== 1. التاريخ =====
+    const dateEl = document.getElementById('currentDate');
+    if (dateEl) {
+        const opts = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' };
+        dateEl.textContent = new Intl.DateTimeFormat('ar-EG', opts).format(new Date());
+    }
+
+    // ===== 2. تبديل القائمة الجانبية =====
+    const toggleBtn = document.getElementById('toggleSidebar');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    const mainContent = document.getElementById('mainContent');
+
+    function toggleSidebarFunc() {
+        if (window.innerWidth < 992) {
+            sidebar.classList.toggle('show');
+            overlay.classList.toggle('show');
+        } else {
+            if (sidebar.style.transform === 'translateX(100%)') {
+                sidebar.style.transform = 'translateX(0)';
+                mainContent.style.width = 'calc(100% - var(--sidebar-width))';
+                mainContent.style.marginRight = 'var(--sidebar-width)';
+            } else {
+                sidebar.style.transform = 'translateX(100%)';
+                mainContent.style.width = '100%';
+                mainContent.style.marginRight = '0';
+            }
         }
+    }
+    if (toggleBtn) toggleBtn.addEventListener('click', toggleSidebarFunc);
+    if (overlay) overlay.addEventListener('click', function() {
+        sidebar.classList.remove('show');
+        overlay.classList.remove('show');
+    });
 
-        // اسم المستخدم
-        fetch('/api/session')
-            .then(res => res.json())
-            .then(data => {
-                if (data.loggedIn && data.fullName) {
-                    document.getElementById('userName').textContent = data.fullName;
-                    document.getElementById('userAvatar').textContent = data.fullName.charAt(0);
-                }
-            })
-            .catch(() => {});
-
-        // تبديل القائمة الجانبية
-        const toggleBtn = document.getElementById('toggleSidebar');
-        const sidebar = document.getElementById('sidebar');
-        if (toggleBtn && sidebar) {
-            toggleBtn.addEventListener('click', function() {
-                sidebar.classList.toggle('show');
-            });
+    // إعادة ضبط الشاشة عند تغيير الحجم
+    window.addEventListener('resize', function() {
+        if (window.innerWidth >= 992) {
+            sidebar.classList.remove('show');
+            if (overlay) overlay.classList.remove('show');
+            sidebar.style.transform = 'translateX(0)';
+            mainContent.style.width = 'calc(100% - var(--sidebar-width))';
+            mainContent.style.marginRight = 'var(--sidebar-width)';
+        } else {
+            sidebar.style.transform = '';
+            mainContent.style.width = '100%';
+            mainContent.style.marginRight = '0';
         }
+    });
 
-        // الإحصائيات
-        fetch('/api/stats')
-            .then(res => res.json())
-            .then(stats => {
-                document.getElementById('totalOrphans').textContent = stats.totalOrphans || 0;
-                document.getElementById('activeSponsorships').textContent = stats.activeSponsorships || 0;
-                document.getElementById('totalFamilies').textContent = stats.totalFamilies || 0;
-                document.getElementById('totalAid').textContent = stats.totalAid || 0;
-            })
-            .catch(() => {});
+    // ===== 3. جلب بيانات المستخدم =====
+    fetch('/api/session')
+        .then(r => r.json())
+        .then(data => {
+            if (data.loggedIn && data.fullName) {
+                document.getElementById('userName').textContent = data.fullName;
+                document.getElementById('userAvatar').textContent = data.fullName.charAt(0);
+            }
+        }).catch(() => {});
 
-        // المخطط
-        fetch('/api/chart-data')
-            .then(res => res.json())
-            .then(data => {
-                const ctx = document.getElementById('orphansChart').getContext('2d');
-                new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: data.labels || ['نشط', 'منقطع', 'منتهي'],
-                        datasets: [{
-                            label: 'عدد الأيتام',
-                            data: data.values || [0, 0, 0],
-                            backgroundColor: ['#bb86fc', '#f5a623', '#6fcf97'],
-                            borderColor: ['#bb86fc', '#f5a623', '#6fcf97'],
-                            borderWidth: 2,
-                            borderRadius: 8,
-                            barPercentage: 0.6,
-                        }]
+    // ===== 4. جلب الإحصائيات =====
+    fetch('/api/stats')
+        .then(r => r.json())
+        .then(stats => {
+            document.getElementById('totalOrphans').textContent = stats.totalOrphans || 0;
+            document.getElementById('activeSponsorships').textContent = stats.activeSponsorships || 0;
+            document.getElementById('totalFamilies').textContent = stats.totalFamilies || 0;
+            document.getElementById('totalAid').textContent = stats.totalAid || 0;
+        }).catch(() => {});
+
+    // ===== 5. جلب بيانات المخطط =====
+    fetch('/api/chart-data')
+        .then(r => r.json())
+        .then(data => {
+            const ctx = document.getElementById('orphansChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data.labels || ['نشط', 'منقطع', 'منتهي'],
+                    datasets: [{
+                        label: 'عدد الأيتام',
+                        data: data.values || [0, 0, 0],
+                        backgroundColor: ['rgba(187,134,252,0.8)', 'rgba(245,166,35,0.8)', 'rgba(111,207,151,0.8)'],
+                        borderColor: ['#bb86fc', '#f5a623', '#6fcf97'],
+                        borderWidth: 2,
+                        borderRadius: 8,
+                        barPercentage: 0.5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: 'rgba(255,255,255,0.5)' } },
+                        x: { grid: { display: false }, ticks: { color: 'rgba(255,255,255,0.7)' } }
                     },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } },
-                        plugins: { legend: { display: false } },
-                        locale: 'ar-EG'
-                    }
-                });
-            })
-            .catch(() => {});
-
-        // النشاطات
-        fetch('/api/activities')
-            .then(res => res.json())
-            .then(activities => {
-                const container = document.getElementById('recentActivities');
-                if (!container) return;
-                if (!activities || activities.length === 0) {
-                    container.innerHTML = `
-                        <div class="text-center text-muted py-4">
-                            <i class="fas fa-inbox fa-2x mb-2"></i>
-                            <p>لا توجد نشاطات</p>
-                        </div>
-                    `;
-                    return;
+                    plugins: { legend: { display: false } },
+                    locale: 'ar-EG'
                 }
-                container.innerHTML = activities.map(a => `
-                    <div class="activity-item">
-                        <div class="activity-icon bg-${a.iconClass || 'secondary-subtle'} text-${a.iconClass || 'secondary'}">
-                            <i class="fas ${a.icon || 'fa-circle'}"></i>
-                        </div>
-                        <div>
-                            <div class="fw-semibold">${a.title || 'نشاط'}</div>
-                            <div class="text-muted small">${a.time || 'الآن'}</div>
-                        </div>
-                    </div>
-                `).join('');
-            })
-            .catch(() => {});
+            });
+        }).catch(() => {});
 
-        console.log('✅ Dark Mode Dashboard يعمل بنجاح');
-    })();
+    // ===== 6. جلب النشاطات الأخيرة =====
+    fetch('/api/activities')
+        .then(r => r.json())
+        .then(activities => {
+            const container = document.getElementById('recentActivities');
+            if (!container) return;
+            if (!activities || activities.length === 0) {
+                container.innerHTML = '<div class="text-center text-muted py-3">لا توجد نشاطات</div>';
+                return;
+            }
+            container.innerHTML = activities.map(a => `
+                <div class="activity-item">
+                    <div class="activity-icon bg-${a.iconClass || 'secondary-subtle'} text-${a.iconClass || 'secondary'} border-${a.iconClass || 'secondary'}">
+                        <i class="fas ${a.icon || 'fa-circle'}"></i>
+                    </div>
+                    <div class="activity-content">
+                        <div class="fw-semibold text-light">${a.title || 'نشاط'}</div>
+                        <div class="text-muted small mt-1">${a.time || 'الآن'}</div>
+                    </div>
+                </div>
+            `).join('');
+        }).catch(() => {});
+
+    // ===== 7. جلب أحدث الأيتام للجدول =====
+    fetch('/api/orphans')
+        .then(r => r.json())
+        .then(orphans => {
+            const tbody = document.getElementById('latestOrphansBody');
+            if (!tbody) return;
+            if (!orphans || orphans.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="3" class="text-center text-muted py-3">لا يوجد أيتام مسجلين</td></tr>';
+                return;
+            }
+            const latest = orphans.slice(0, 5);
+            tbody.innerHTML = latest.map(o => `
+                <tr>
+                    <td>${o.FullName || 'غير معروف'}</td>
+                    <td>${o.AdmissionDate ? new Date(o.AdmissionDate).toLocaleDateString('ar-EG') : '—'}</td>
+                    <td><span class="badge ${o.OrphanStatus === 'نشط' ? 'bg-success' : o.OrphanStatus === 'منقطع' ? 'bg-warning text-dark' : 'bg-danger'}">${o.OrphanStatus || 'غير محدد'}</span></td>
+                </tr>
+            `).join('');
+        }).catch(() => {
+            document.getElementById('latestOrphansBody').innerHTML = '<tr><td colspan="3" class="text-center text-muted py-3">تعذر تحميل البيانات</td></tr>';
+        });
+
+});
 </script>
 </body>
 </html>
