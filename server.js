@@ -1512,22 +1512,36 @@ async function addNotification(userId, title, message, type = 'معلومة', li
 // ============================================================
 // 8. إنشاء المستخدم admin تلقائياً
 // ============================================================
+// ============================================================
+// 8. إنشاء أو تحديث المستخدم admin تلقائياً
+// ============================================================
 async function ensureAdminUser() {
     try {
-        const admin = await getQuery('SELECT UserID FROM tblUsers WHERE Username = ?', ['admin']);
+        console.log('🔄 جارٍ التحقق من المستخدم admin...');
+        const admin = await getQuery('SELECT UserID, PasswordHash FROM tblUsers WHERE Username = ?', ['admin']);
+        
+        const newHash = bcrypt.hashSync('Admin@123', 10);
+        
         if (!admin) {
-            const hash = bcrypt.hashSync('Admin@123', 10);
+            console.log('⚠️ المستخدم admin غير موجود، جاري إنشائه...');
             await runQuery(
                 `INSERT INTO tblUsers (Username, PasswordHash, FullName, Email, RoleID, IsActive, IsDeleted)
                  VALUES (?, ?, ?, ?, ?, ?, ?)`,
-                ['admin', hash, 'مدير النظام', 'admin@alshawkani.org', 1, 1, 0]
+                ['admin', newHash, 'مدير النظام', 'admin@alshawkani.org', 1, 1, 0]
             );
-            console.log('✔ تم إنشاء المستخدم admin تلقائياً.');
+            console.log('✔ تم إنشاء المستخدم admin بنجاح.');
         } else {
-            console.log('✔ المستخدم admin موجود بالفعل.');
+            // تحديث كلمة المرور (للتأكد من صحتها)
+            console.log('🔑 تحديث كلمة مرور المستخدم admin...');
+            await runQuery(
+                'UPDATE tblUsers SET PasswordHash = ?, UpdatedAt = CURRENT_TIMESTAMP WHERE UserID = ?',
+                [newHash, admin.UserID]
+            );
+            console.log('✔ تم تحديث كلمة مرور المستخدم admin بنجاح.');
         }
     } catch (err) {
-        console.error('خطأ في التأكد من وجود المستخدم admin:', err.message);
+        console.error('❌ خطأ في التأكد من وجود المستخدم admin:', err.message);
+        console.error(err);
     }
 }
 
